@@ -5,7 +5,7 @@ Tutor: Tanjila Kanij
 
 Team:
 * Carlo Sinay (100594804)
-* Andrej Mitrevski
+* Andrej Mitrevski (100580214)
 * Robert Petrella (100585206)
 * Devaesh Paggdas
 
