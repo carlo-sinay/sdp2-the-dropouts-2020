@@ -14,6 +14,6 @@ Team:
 
 ## Directory structure
 * src - source files
-* data - all database files
+* data - all database files (to be added later)
     * logs - internal log file the program uses
 	* export - all exported data like reports
