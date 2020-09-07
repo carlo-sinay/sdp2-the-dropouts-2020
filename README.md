@@ -10,3 +10,10 @@ Team:
 * Devaesh Paggdas
 
 *Please add your student ID to this README and delete this when all IDs are uploaded*
+
+
+## Directory structure
+* src - source files
+* data - all database files
+    * logs - internal log file the program uses
+	* export - all exported data like reports
