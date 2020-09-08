@@ -1,10 +1,13 @@
 
 int main(string[] args) {
-    stdout.printf("Main!\n");
-    Database myDb = new Database();
-    myDb.db();
+    stdout.printf("Welcome to PHP-SrePS!\n");
+    Database myDb = new Database();         //opened file
+    string str = "blah";
+    myDb.add_record(ref str);
+    myDb.edit_record(0,ref str);
+    myDb.delete_record(0);
 
-    stdout.printf("Int is %i\n",myDb.getA());
+
 
     return 0;
 

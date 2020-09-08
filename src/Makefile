@@ -1,10 +1,15 @@
-PROJECT=php-ereps
-VC=valac
+PROJECT=php-sreps
+COMPILER=valac
 GTK_PKG_FLAG=gtk+-3.0
-CFLAGS=--pkg ${GTK_PKG_FLAG}
+APP_PKG_FLAG=gio-2.0
+COMPILER_FLAGS=--pkg ${GTK_PKG_FLAG}
+BUILD_DIR := ../build
+SRC_FILES += \
+  main.vala \
+  database.vala\
 
 ${PROJECT}: main.vala database.vala
-	${VC} main.vala database.vala -o ${PROJECT}
+	${COMPILER} --pkg ${APP_PKG_FLAG} ${SRC_FILES} -o ${BUILD_DIR}/${PROJECT}
 
 gui: GTKExample.vala
-	${VC} --pkg ${GTK_PKG_FLAG} GTKExample.vala -o GUIExample
+	${COMPILER} --pkg ${GTK_PKG_FLAG} GTKExample.vala -o GUIExample
