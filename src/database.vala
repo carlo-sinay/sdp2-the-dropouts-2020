@@ -23,19 +23,45 @@ public class Database : GLib.Object
        m_log_file_dos = new DataOutputStream( m_log_file_ios.output_stream as FileOutputStream );
        m_log_file_dis = new DataInputStream( m_log_file_ios.input_stream as FileInputStream );
     
+       
     }
+    
 
     /* SPRINT 1 FUNCTIONALITY GOES HERE (i guess) */
     public void add_record(ref string rec_to_add)
     {
+        //for testing purposes - adding a line to the file
+        m_log_file_dos.put_string("1, meme, kefe, eiufjeoifu, cnuoidwd\n");
+        
         stdout.printf("Adding record!\n");
     }
     public void edit_record(int record_id,ref string new_record)
     {
         stdout.printf("Changing record!\n");
     }
-    public void delete_record(int record_id)
-    {
+    public void delete_record(int record_id) {
+        var dis = new DataInputStream(m_log_file.read());
+
+        string line;
+        try {
+            //checks to see if file has line or not. Note it only sees the first line, so not working properly
+            if((line = dis.read_line(null))!=null){
+
+                string[] vals = line.split(", ");
+                
+                foreach(unowned string str in vals){
+                    //purely for testing purposes - Not working for final product
+                    if(str != "1"){stdout.printf("'%s'\n", str);}
+                    
+                }
+
+                stdout.printf ("%s\n", line);
+    
+            }
+        } catch(Error e) {
+            stderr.printf("%s\n", e.message);
+        }
+        
         stdout.printf("Deleted record!\n");
     }
 }
