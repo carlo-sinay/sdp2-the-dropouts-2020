@@ -43,6 +43,23 @@ public class Database : GLib.Object
         m_log_file.puts(rec_to_add);
         stdout.printf("Adding record!\n");
     }
+
+    //For Add Record - prepend id to string
+    public int find_last_record_id()
+    {
+        //Open File in READ mode
+        m_log_file = FileStream.open("../data/logs/testLog","r");
+        string? line = null;
+        int id = 0;
+
+        while ((line = m_log_file.read_line())!= null) {
+            id = line.get_char().digit_value();
+        }
+
+        return id;
+        
+    }
+
     public void edit_record(int record_id,ref string new_record)
     {
         stdout.printf("Changing record!\n");
