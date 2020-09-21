@@ -65,24 +65,29 @@ public class Database : GLib.Object
         stdout.printf("Changing record!\n");
     }
     public void delete_record(int record_id) {
+
+        stdout.printf("Enter ID to delete: ");
+        
         string line;
         try {
-            //checks to see if file has line or not. Note it only sees the first line, so not working properly
-            if((line = m_log_file.read_line())!=null){
-
-                string[] vals = line.split(", ");
-                
+            //checks to see if file has line or not. Uses while loop to print all iterations to the 
+            while((line = m_log_file.read_line())!=null){
+                string[] vals = line.split(",");
+                string id = vals[0];
+                foreach(unowned string db_content in vals){
+                    stdout.printf("%s\n", db_content);
+                }
                 foreach(unowned string str in vals){
                     //purely for testing purposes - Not working for final product
-                    if(str != "1"){stdout.printf("'%s'\n", str);}
-                    
+                    if(str != id){ 
+                        //dostest.put_string("null"); 
+                    }
                 }
-
-                stdout.printf ("%s\n", line);
             }
         } catch(Error e) {
             stderr.printf("%s\n", e.message);
         }
+
         stdout.printf("Deleted record!\n");
     }
 }
