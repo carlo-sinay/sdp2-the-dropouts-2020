@@ -43,30 +43,51 @@ public class Database : GLib.Object
         m_log_file.puts(rec_to_add);
         stdout.printf("Adding record!\n");
     }
+
+    //For Add Record - prepend id to string
+    public int find_last_record_id()
+    {
+        //Open File in READ mode
+        m_log_file = FileStream.open("../data/logs/testLog","r");
+        string? line = null;
+        int id = 0;
+
+        while ((line = m_log_file.read_line())!= null) {
+            id = line.get_char().digit_value();
+        }
+
+        return id;
+        
+    }
+
     public void edit_record(int record_id,ref string new_record)
     {
         stdout.printf("Changing record!\n");
     }
     public void delete_record(int record_id) {
+
+        stdout.printf("Enter ID to delete: ");
+        
         string line;
         try {
-            //checks to see if file has line or not. Note it only sees the first line, so not working properly
-            if((line = m_log_file.read_line())!=null){
-
-                string[] vals = line.split(", ");
-                
+            //checks to see if file has line or not. Uses while loop to print all iterations to the 
+            while((line = m_log_file.read_line())!=null){
+                string[] vals = line.split(",");
+                string id = vals[0];
+                foreach(unowned string db_content in vals){
+                    stdout.printf("%s\n", db_content);
+                }
                 foreach(unowned string str in vals){
                     //purely for testing purposes - Not working for final product
                     if(str != id){ 
                         //dostest.put_string("null"); 
                     }
                 }
-
-                stdout.printf ("%s\n", line);
             }
         } catch(Error e) {
             stderr.printf("%s\n", e.message);
         }
+
         stdout.printf("Deleted record!\n");
     }
 }
