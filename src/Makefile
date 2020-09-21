@@ -8,8 +8,12 @@ SRC_FILES += \
   main.vala \
   database.vala\
 
+all: mkdir ${PROJECT}
 ${PROJECT}: main.vala database.vala
 	${COMPILER} --pkg ${APP_PKG_FLAG} ${SRC_FILES} -o ${BUILD_DIR}/${PROJECT}
+
+mkdir:
+	mkdir -p ../build
 
 gui: GTKExample.vala
 	${COMPILER} --pkg ${GTK_PKG_FLAG} GTKExample.vala -o GUIExample
