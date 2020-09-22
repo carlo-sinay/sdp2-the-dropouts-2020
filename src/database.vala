@@ -23,7 +23,7 @@ public class Database : GLib.Object
     }
     //here we're pretty sure the dirs exist
     stdout.printf("All directories are present. Opening latest log file!\n");
-    m_log_file = FileStream.open("../data/logs/testLog","a");
+    m_log_file = FileStream.open("../data/logs/testLog","a+");
 
        //using gio's File to first check if ../data exists and then
        //../data/log and then finally open it with open(,"a") which will create it if it doesn't exist, otherwise append
@@ -47,8 +47,6 @@ public class Database : GLib.Object
     //For Add Record - prepend id to string
     public int find_last_record_id()
     {
-        //Open File in READ mode
-        m_log_file = FileStream.open("../data/logs/testLog","r");
         string? line = null;
         int id = 0;
 
@@ -60,9 +58,22 @@ public class Database : GLib.Object
         
     }
 
-    public void edit_record(int record_id,ref string new_record)
+    public void edit_record(ref int record_id,ref string new_record)
     {
-        stdout.printf("Changing record!\n");
+        int id = 0;
+        string? line = null;
+
+
+        while (id != record_id){
+            line = null; 
+            line = m_log_file.read_line();          
+            id++;
+        }
+
+        //test output of current line
+        stdout.printf(line);
+
+        stdout.printf("\nChanging record!\n");
     }
     public void delete_record(int record_id) {
 
