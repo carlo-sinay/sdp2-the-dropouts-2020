@@ -23,7 +23,7 @@ public class Database : GLib.Object
     }
     //here we're pretty sure the dirs exist
     stdout.printf("All directories are present. Opening latest log file!\n");
-    m_log_file = FileStream.open("../data/logs/testLog","a");
+    m_log_file = FileStream.open("../data/logs/testLog","a+");
 
        //using gio's File to first check if ../data exists and then
        //../data/log and then finally open it with open(,"a") which will create it if it doesn't exist, otherwise append
@@ -48,7 +48,7 @@ public class Database : GLib.Object
     public int find_last_record_id()
     {
         //Open File in READ mode
-        m_log_file = FileStream.open("../data/logs/testLog","r");
+        //m_log_file = FileStream.open("../data/logs/testLog","a+");
         string? line = null;
         int id = 0;
 
@@ -65,24 +65,23 @@ public class Database : GLib.Object
         stdout.printf("Changing record!\n");
     }
     public void delete_record(int record_id) {
-
-        stdout.printf("Enter ID to delete: ");
         
-        string line;
+        string? line = null;
+        m_log_file = FileStream.open("../data/logs/testLog","a+");
         try {
             //checks to see if file has line or not. Uses while loop to print all iterations to the 
             while((line = m_log_file.read_line())!=null){
+                int id = line.get_char().digit_value();
                 string[] vals = line.split(",");
-                string id = vals[0];
+
                 foreach(unowned string db_content in vals){
-                    stdout.printf("%s\n", db_content);
-                }
-                foreach(unowned string str in vals){
-                    //purely for testing purposes - Not working for final product
-                    if(str != id){ 
-                        //dostest.put_string("null"); 
+                    if( id == record_id){
+                        stdout.printf("%s\n", db_content);
+                        db_content.replace(db_content, "null"); //Not Working Yet
                     }
+                    
                 }
+                
             }
         } catch(Error e) {
             stderr.printf("%s\n", e.message);

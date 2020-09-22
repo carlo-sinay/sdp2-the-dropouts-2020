@@ -27,10 +27,16 @@ int main(string[] args) {
     stdout.printf("Price: \n");
     string price = stdin.read_line();
 
-    string rec = "3,"+item_type+","+quantity+","+price + "\n";
+    string rec = "2,"+item_type+","+quantity+","+price + "\n";
     
     myDb.add_record(ref rec);
 
+
+
+    stdout.printf("Enter ID to Delete: ");
+    string remove_db_entry = stdin.read_line();
+
+    myDb.delete_record(remove_db_entry.get_char().digit_value());
     return 0;
 
 }
