@@ -6,31 +6,55 @@ void test_find_last_record_id(Database db){
     stdout.printf("Last ID: %d\n",id);
 }
 
-
+//Print out whole file
+void print_all(Database *db)
+{
+    stdout.printf("\n\033[32m---------ALL RECORDS----------\n");
+    for(int i = 1; i <= db->last_record_id; i++)
+    {
+        stdout.printf("\t[%s]\n",db->read_record(i));
+    }
+    stdout.printf("------------------------------\033[0m\n");
+}
 
 //Main Function
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
-
-    test_find_last_record_id(myDb);
-    
     //get console input for now
-    stdout.printf("Item type: \n");
-    string item_type = stdin.read_line();
+    while(true){
+        print_all(myDb);
+        stdout.printf(" a - add record \n r - read record \n q - exit\n\n");
+        string input = stdin.read_line();
+        switch(input[0]){
+            case 'a':   //add record
+                stdout.printf("Item type: \n");
+                string item_type = stdin.read_line();
 
+                stdout.printf("Quantity: \n");
+                string quantity = stdin.read_line();
 
-    stdout.printf("Quantity: \n");
-    string quantity = stdin.read_line();
+                stdout.printf("Price: \n");
+                string price = stdin.read_line();
 
+                string rec = item_type+","+quantity+","+price + "\n";
+                
+                myDb.add_record(ref rec);
 
-    stdout.printf("Price: \n");
-    string price = stdin.read_line();
-
-    string rec = "3,"+item_type+","+quantity+","+price + "\n";
-    
-    myDb.add_record(ref rec);
-
+                break;
+           case 'r':   //read record
+                stdout.printf("Which record?\n");
+                string which_rec = stdin.read_line();
+                int id = which_rec[0].digit_value();
+                stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id));
+                break;
+            case 'q':   //exit
+                return 0;
+                break;
+            default:
+                stdout.printf("Not a valid input\n");
+                break;
+        }
+    }
     return 0;
-
 }
