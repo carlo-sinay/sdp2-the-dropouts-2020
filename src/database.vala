@@ -116,13 +116,20 @@ public class Database : GLib.Object
     //For Add Record - prepend id to string
     public int find_last_record_id()
     {
-        string? line = null;
+        string? ln_chkr = null;
+        string? ln = null;
+        string[2] fields = {"",""};
         int id = 0;
-        //TODO: make sure cursor is at beggining of last line
-        //      add support for 2 and 3 digit IDs
-        while ((line = m_log_file.read_line())!= null) {
-            id = line.get_char().digit_value();
+
+
+        while ((ln_chkr = m_log_file.read_line())!= null) {
+            ln = ln_chkr;
+            continue;
         }
+
+        fields = ln.split(",",2);
+        id = int.parse(fields[0]);
+        
         stdout.printf("Last ID found: %i\n",id);
         //return the file indicator back where it was.
         //seek_to(m_log_file_id_pos);
