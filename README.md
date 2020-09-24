@@ -9,9 +9,6 @@ Team:
 * Robert Petrella (100585206)
 * Devaesh Kaggdas (102014430)
 
-*Please add your student ID to this README and delete this when all IDs are uploaded*
-
-
 ## Directory structure
 * src - source files
 * data - all database files (to be added later)
