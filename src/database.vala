@@ -23,7 +23,7 @@ public class Database : GLib.Object
     }
     //here we're pretty sure the dirs exist
     stdout.printf("All directories are present. Opening latest log file!\n");
-    m_log_file = FileStream.open("../data/logs/testLog","a+");
+    m_log_file = FileStream.open("../data/logs/testLog","r+");
 
        //using gio's File to first check if ../data exists and then
        //../data/log and then finally open it with open(,"a") which will create it if it doesn't exist, otherwise append
@@ -66,18 +66,21 @@ public class Database : GLib.Object
     }
     public void delete_record(int record_id) {
         
-        string? line = null;
-        m_log_file = FileStream.open("../data/logs/testLog","a+");
+        string line = null;
+        m_log_file = FileStream.open("../data/logs/testLog","r+");
         try {
-            //checks to see if file has line or not. Uses while loop to print all iterations to the 
+            //checks to see if file has line or not. Uses while loop to print all iterations to the console
             while((line = m_log_file.read_line())!=null){
-                int id = line.get_char().digit_value();
+                
                 string[] vals = line.split(",");
+                int id = int.parse(vals[0]);
 
                 foreach(unowned string db_content in vals){
-                    if( id == record_id){
+                    if( id == record_id ){
                         stdout.printf("%s\n", db_content);
-                        db_content.replace(db_content, "null"); //Not Working Yet
+                        string replace_content = db_content.replace(db_content, "null"); //Not Working Yet
+                        m_log_file.puts(replace_content);
+                        
                     }
                     
                 }
