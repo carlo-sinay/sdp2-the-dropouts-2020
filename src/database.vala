@@ -49,6 +49,14 @@ public class Database : GLib.Object
             m_dir_checker.make_directory_with_parents();
         }
    }
+   public int check_id_in_line(ref string line)
+   {
+       //check the ID at the start of the given string
+       //has to be valid log record
+       string[] fields = line.split(",");
+       int id = int.parse(fields[0]);
+       return id;
+   }
     public void seek_to(int record_id)
     {
         //seeks to start of line on the record ID given

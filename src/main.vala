@@ -24,7 +24,7 @@ int main(string[] args) {
     //get console input for now
     while(true){
         print_all(myDb);
-        stdout.printf(" a - add record \n r - read record \n q - exit\n\n");
+        stdout.printf(" c - check line \n a - add record \n r - read record \n q - exit\n\n");
         string input = stdin.read_line();
         switch(input[0]){
             case 'a':   //add record
@@ -50,6 +50,12 @@ int main(string[] args) {
                 break;
             case 'q':   //exit
                 return 0;
+                break;
+            case 'c':
+                stdout.printf("Type in test record. \n");
+                string which_line = stdin.read_line();
+                int line_id = myDb.check_id_in_line(ref which_line);
+                stdout.printf("Record [ %s ] has id %i \n",which_line,line_id);
                 break;
             default:
                 stdout.printf("Not a valid input\n");
