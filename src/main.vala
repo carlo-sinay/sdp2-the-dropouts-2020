@@ -1,45 +1,66 @@
 //Test Functions
 //Testing - Find last record id
-void test_find_last_record_id(ref Database db){
+void test_find_last_record_id(Database db){
     int id = db.find_last_record_id();
 
     stdout.printf("Last ID: %d\n",id);
 }
 
-void test_edit_record(ref Database db, ref int index, ref string str){
-    db.edit_record(ref index, ref str);
+//Print out whole file
+void print_all(Database *db)
+{
+    stdout.printf("\n\033[32m---------ALL RECORDS----------\n");
+    for(int i = 1; i <= db->last_record_id; i++)
+    {
+        stdout.printf("\t[%s]\n",db->read_record(i));
+    }
+    stdout.printf("------------------------------\033[0m\n");
 }
-
-
 
 //Main Function
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
+    //get console input for now
+    while(true){
+        print_all(myDb);
+        stdout.printf(" c - check line \n a - add record \n r - read record \n q - exit\n\n");
+        string input = stdin.read_line();
+        switch(input[0]){
+            case 'a':   //add record
+                stdout.printf("Item type: \n");
+                string item_type = stdin.read_line();
 
-    test_find_last_record_id(ref myDb);
+                stdout.printf("Quantity: \n");
+                string quantity = stdin.read_line();
 
-    int test_idx = 2;
-    string test_str = "hello there";
+                stdout.printf("Price: \n");
+                string price = stdin.read_line();
 
-    test_edit_record(ref myDb, ref test_idx, ref test_str);
-    
-    //  //get console input for now
-    //  stdout.printf("Item type: \n");
-    //  string item_type = stdin.read_line();
+                string rec = item_type+","+quantity+","+price + "\n";
+                
+                myDb.add_record(ref rec);
 
-
-    //  stdout.printf("Quantity: \n");
-    //  string quantity = stdin.read_line();
-
-
-    //  stdout.printf("Price: \n");
-    //  string price = stdin.read_line();
-
-    //  string rec = "3,"+item_type+","+quantity+","+price + "\n";
-    
-    //  myDb.add_record(ref rec);
-
+                break;
+           case 'r':   //read record
+                stdout.printf("Which record?\n");
+                string which_rec = stdin.read_line();
+                int id = which_rec[0].digit_value();
+                stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id));
+                break;
+            case 'q':   //exit
+                return 0;
+                break;
+            case 'c':
+                stdout.printf("Type in test record. \n");
+                string which_line = stdin.read_line();
+                int line_id = myDb.check_id_in_line(ref which_line);
+                stdout.printf("Record [ %s ] has id %i \n",which_line,line_id);
+                break;
+            default:
+                stdout.printf("Not a valid input\n");
+                break;
+        }
+    }
     return 0;
-
 }
