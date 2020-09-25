@@ -61,7 +61,6 @@ public class Database : GLib.Object
 
     public void seek_to(int record_id)
     {
-
         m_log_file.rewind();
         long fp = 0;
         long len = 0;
@@ -98,15 +97,12 @@ public class Database : GLib.Object
             //Move File Pointer back by length of ID
             m_log_file.seek((-1)*len,FileSeek.CUR);
             m_log_file_id_pos = id;
-            fp = m_log_file.tell();
+            
+            //DEBUG: Check File Pointer Position and curent ch as a HEX value
+            //fp = m_log_file.tell();
             //stdout.printf("\033[31m FP: %ld | ch: 0x%02hhX\033[0m",fp,(char)ch);
         }
-        else {
-            stdout.printf("File empty!\n");
-        }
         stdout.printf("[%i]\t",m_log_file_id_pos); 
-        //  stdout.printf("\033[31m id %d \033[0m", id);
-        //  stdout.printf("\033[31m rec_id %d \033[0m", record_id);
     }
     
 
@@ -158,8 +154,25 @@ public class Database : GLib.Object
 
     public void edit_record(int record_id,ref string new_record)
     {
+        //go to specified line
+        seek_to(record_id);
 
-        stdout.printf("Changing record!\n");
+        string? line = m_log_file.read_line();
+        long line_len = line.len();
+        long rec_len = new_record.len();
+
+        if (rec_len <= line_len){
+            m_log_file.seek((-1)*line_len-1,FileSeek.CUR);
+            string updated_rec = record_id.to_string() + "," + new_record;
+            m_log_file.puts(updated_rec);
+            stdout.printf("Record Updated!\n");
+        }
+        else {
+            //cannot update a string with extra characters than the original
+            stdout.printf("Error: String length overload. Update failed.");
+        }
+
+        
         //this leaves the cursor at the beggining of the next line after record_id
     }
 
