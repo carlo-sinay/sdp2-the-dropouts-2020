@@ -42,55 +42,74 @@ public class Database : GLib.Object
             }
         }
         m_dir_checker = File.new_for_path("../data/export/");
-         if(!m_dir_checker.query_exists())
-       {
+        if(!m_dir_checker.query_exists())
+        {
             //"../data/logs" dir doesn't exist so create it with its parents
             stdout.printf("[../data/export] doesn't exist. Creating now!\n");
             m_dir_checker.make_directory_with_parents();
         }
-   }
-   public int check_id_in_line(ref string line)
-   {
-       //check the ID at the start of the given string
-       //has to be valid log record
-       string[] fields = line.split(",");
-       int id = int.parse(fields[0]);
-       return id;
-   }
+    }
+    public int check_id_in_line(ref string line)
+    {
+        //check the ID at the start of the given string
+        //has to be valid log record
+        string[] fields = line.split(",");
+        int id = int.parse(fields[0]);
+        return id;
+    }
+
+
     public void seek_to(int record_id)
     {
-        //seeks to start of line on the record ID given
-        //should be used before any file operations
-        //getc() moves the file pointer forward by 1
-        //assuming this will be called with a valid ID (might need to add check for that)
 
         m_log_file.rewind();
-        //record 0 means file empty
-        if(record_id == 0) return;
-        //if not check if file empty
-        char ch = (char)m_log_file.getc();
-        if(ch != (FileStream.EOF&0xFF))
-        {
-            //if file not empty, seek till NL then read next char
-            //should be the ID of the next record
-            int ch_num = (char)ch.digit_value();
-            while(ch_num != record_id){
-                while(ch != 0x0a){
-                    ch = (char)m_log_file.getc();
+        long fp = 0;
+        long len = 0;
+                
+        int ch = m_log_file.getc();
+        //Variable Size Container for ID
+        var builder = new StringBuilder();
+        builder.append_c((char)ch);
+        //Set first ID
+        int id = builder.str.to_int();
+        
+        m_log_file.rewind();
+
+        if (ch != (FileStream.EOF&0xFF)){
+            //Checks for sought ID
+            while (id != record_id) {
+                //Ignores clearing StringBuilder for first ID
+                if (record_id != 1) {
+                    len = builder.str.len();
+                    builder.erase(0,len);
                 }
-                //here we should be pointing to the char right after the NL
-                ch = (char)m_log_file.getc();
-                ch_num = ch.digit_value();
+                //Checks for New Line ('\n')
+                while (ch != 0x0a) {
+                    ch = m_log_file.getc();
+                }
+                //Checks for first comma (',') in current line
+                while (ch != 0x2c) {
+                    ch = m_log_file.getc();
+                    builder.append_c((char)ch);            
+                }
+                len = builder.str.len();
+                id = builder.str.to_int();
             }
-            //go back one so we're at the beginning of the line if it's the one we want
-            m_log_file.seek(-1,FileSeek.CUR);
-            m_log_file_id_pos = ch_num;
+            //Move File Pointer back by length of ID
+            m_log_file.seek((-1)*len,FileSeek.CUR);
+            m_log_file_id_pos = id;
+            fp = m_log_file.tell();
+            //stdout.printf("\033[31m FP: %ld | ch: 0x%02hhX\033[0m",fp,(char)ch);
         }
         else {
             stdout.printf("File empty!\n");
         }
-        stdout.printf("[%i]\t",m_log_file_id_pos);
+        stdout.printf("[%i]\t",m_log_file_id_pos); 
+        //  stdout.printf("\033[31m id %d \033[0m", id);
+        //  stdout.printf("\033[31m rec_id %d \033[0m", record_id);
     }
+    
+
     public void add_record(ref string rec_to_add)
     {
         //for testing purposes - adding a line to the file
