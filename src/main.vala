@@ -24,7 +24,7 @@ int main(string[] args) {
     //get console input for now
     while(true){
         print_all(myDb);
-        stdout.printf(" c - check line \n a - add record \n r - read record \n q - exit\n\n");
+        stdout.printf(" c - check line \n a - add record \n r - read record \n e - edit record \n q - exit\n\n");
         string input = stdin.read_line();
         switch(input[0]){
             case 'a':   //add record
@@ -47,6 +47,24 @@ int main(string[] args) {
                 string which_rec = stdin.read_line();
                 int id = which_rec[0].digit_value();
                 stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id));
+                break;
+            case 'e': //edit record
+                stdout.printf("Which record? (By ID)\n");
+                string which_rec = stdin.read_line();
+                int id = which_rec[0].digit_value();
+
+                stdout.printf("New Item type: \n");
+                string item_type = stdin.read_line();
+
+                stdout.printf("New Quantity: \n");
+                string quantity = stdin.read_line();
+
+                stdout.printf("New Price: \n");
+                string price = stdin.read_line();
+
+                string rec = item_type+","+quantity+","+price+"\n";
+
+                myDb.edit_record(id, ref rec);
                 break;
             case 'q':   //exit
                 return 0;
