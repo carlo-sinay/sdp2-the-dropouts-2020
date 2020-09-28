@@ -66,10 +66,10 @@ int main(string[] args) {
 
                 myDb.edit_record(id, ref rec);
                 break;
-            case 'd':   //delete record (testing)
+            case 'd':   //delete record
                 stdout.printf("Which record?\n");
                 string which_rec = stdin.read_line();
-                int id = which_rec[0].digit_value();
+                int id = int.parse(which_rec);
                 stdout.printf("Deleting %i\n", id);
                 myDb.delete_record(id);
                 break;
@@ -82,7 +82,7 @@ int main(string[] args) {
                 int line_id = myDb.check_id_in_line(ref which_line);
                 stdout.printf("Record [ %s ] has id %i \n",which_line,line_id);
                 break;
-            case 'z':  //delete report (testing) NOTE: No double-check for deletion yet
+            case 'z':  //delete report
                 stdout.printf("Enter name of report: \n");
                 string record_name = stdin.read_line();
                 myDb.delete_report(record_name);
