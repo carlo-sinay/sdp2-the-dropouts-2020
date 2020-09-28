@@ -3,6 +3,7 @@ public class Database : GLib.Object
     private FileStream m_log_file;
     private File m_logs_dir_checker;
     private File m_export_dir_checker;
+    private int last_id;
     public Database(){
         //load an initial hardcoded file here, will add checks and stuff later
         //for now we assume there's no existing file, if there is we delete and start from scratch
@@ -37,10 +38,13 @@ public class Database : GLib.Object
     }
 
     /* SPRINT 1 FUNCTIONALITY GOES HERE (i guess) */
+    last_id++;
     public void add_record(ref string rec_to_add)
     {
         //for testing purposes - adding a line to the file
-        m_log_file.puts(rec_to_add);
+     
+        string column = last_id.to_string() + "," + rec_to_add;
+        m_log_file.puts(column);
         stdout.printf("Adding record!\n");
     }
 
