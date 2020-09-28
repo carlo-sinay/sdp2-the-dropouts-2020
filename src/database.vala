@@ -169,6 +169,9 @@ public class Database : GLib.Object
             //cannot update a string with extra characters than the original
             stdout.printf("Error: String length overload. Update failed.");
         }
+
+        //TO DO 1: Add method(s) to copy remainder of log after target record
+        //TO DO 2: Add cleanup method to remove excess characters
     }
 
     public void delete_record(int record_id) {
