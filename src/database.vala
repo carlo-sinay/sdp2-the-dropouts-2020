@@ -175,24 +175,30 @@ public class Database : GLib.Object
     }
 
     public void delete_record(int record_id) {
+        Database db = new Database();
+        stdout.printf("%i\n", record_id);
+        string line = null;
+        m_log_file = FileStream.open("../data/logs/testLog","r+");
 
-        stdout.printf("Enter ID to delete: ");
-        
-        string line;
         try {
-            //checks to see if file has line or not. Uses while loop to print all iterations to the 
+            //checks to see if file has line or not. Uses while loop to print all iterations to the console
+            
             while((line = m_log_file.read_line())!=null){
+                
                 string[] vals = line.split(",");
-                string id = vals[0];
+                int id = check_id_in_line(ref line);
                 foreach(unowned string db_content in vals){
-                    stdout.printf("%s\n", db_content);
-                }
-                foreach(unowned string str in vals){
-                    //purely for testing purposes - Not working for final product
-                    if(str != id){ 
-                        //dostest.put_string("null"); 
+                    if( id == record_id ){
+                        //seek_to(record_id);
+                        //read_record(record_id);
+                        //stdout.printf("%s\n", db_content);
+                        string replace_content = db_content.replace(db_content, "null"); //Not Working Yet
+                        m_log_file.puts(replace_content);
+                        
                     }
+                    
                 }
+                
             }
         } catch(Error e) {
             stderr.printf("%s\n", e.message);
@@ -201,6 +207,20 @@ public class Database : GLib.Object
         stdout.printf("Deleted record!\n");
     }
 
+
+    //deletes the .csv report in the data/export directory.
+    /*User specifies which report is to be deleted in console (currently testing) 
+    then it passes into File.new_for_path which just points to the directory and delete it*/
+    public void delete_report(string report_name){
+        //Goes to file path of the report to delete. Takes input from user
+        File file = File.new_for_path("../data/export/"+report_name+".csv");
+        try{
+            //deletes the file
+            file.delete();
+        } catch(Error err){
+            stdout.printf("Error: %s\n", err.message);
+        }
+    }
 
     /* getters and setters */
     public int last_record_id {

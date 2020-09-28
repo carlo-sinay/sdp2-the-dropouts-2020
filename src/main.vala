@@ -24,7 +24,7 @@ int main(string[] args) {
     //get console input for now
     while(true){
         print_all(myDb);
-        stdout.printf(" c - check line \n a - add record \n r - read record \n e - edit record \n q - exit\n\n");
+        stdout.printf(" c - check line \n a - add record \n r - read record \n e - edit record \n q - exit\n d - delete record (testing)\n z - delete report (Testing)\n\n");
         string input = stdin.read_line();
         switch(input[0]){
             case 'a':   //add record
@@ -66,6 +66,13 @@ int main(string[] args) {
 
                 myDb.edit_record(id, ref rec);
                 break;
+            case 'd':   //delete record (testing)
+                stdout.printf("Which record?\n");
+                string which_rec = stdin.read_line();
+                int id = which_rec[0].digit_value();
+                stdout.printf("Deleting %i\n", id);
+                myDb.delete_record(id);
+                break;
             case 'q':   //exit
                 return 0;
                 break;
@@ -74,6 +81,12 @@ int main(string[] args) {
                 string which_line = stdin.read_line();
                 int line_id = myDb.check_id_in_line(ref which_line);
                 stdout.printf("Record [ %s ] has id %i \n",which_line,line_id);
+                break;
+            case 'z':  //delete report (testing) NOTE: No double-check for deletion yet
+                stdout.printf("Enter name of report: \n");
+                string record_name = stdin.read_line();
+                myDb.delete_report(record_name);
+                stdout.printf("Report [ %s ] was deleted \n", record_name);
                 break;
             default:
                 stdout.printf("Not a valid input\n");
