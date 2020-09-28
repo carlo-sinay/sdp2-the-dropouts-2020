@@ -24,7 +24,17 @@ int main(string[] args) {
     //get console input for now
     while(true){
         print_all(myDb);
-        stdout.printf(" c - check line \n a - add record \n r - read record \n e - edit record \n q - exit\n d - delete record (testing)\n z - delete report (Testing)\n\n");
+        stdout.printf("
+                        c - check line\n
+                        a - add record\n
+                        r - read record\n
+                        e - edit record\n
+                        g - generate report\n
+                        d - delete record (testing)\n
+                        z - delete report (Testing)\n
+                        q - exit\n
+                      ");
+        stdout.printf("Option: ");
         string input = stdin.read_line();
         switch(input[0]){
             case 'a':   //add record
@@ -75,6 +85,10 @@ int main(string[] args) {
                 break;
             case 'q':   //exit
                 return 0;
+                break;
+            case 'g':   //generate report
+                stdout.printf("generating report\n");
+                myDb.generate_report();
                 break;
             case 'c':
                 stdout.printf("Type in test record. \n");
