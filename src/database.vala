@@ -38,14 +38,16 @@ public class Database : GLib.Object
     }
 
     /* SPRINT 1 FUNCTIONALITY GOES HERE (i guess) */
-    last_id++;
+    
     public void add_record(ref string rec_to_add)
     {
         //for testing purposes - adding a line to the file
      
         string column = last_id.to_string() + "," + rec_to_add;
         m_log_file.puts(column);
+        last_id++;
         stdout.printf("Adding record!\n");
+
     }
 
     //For Add Record - prepend id to string
