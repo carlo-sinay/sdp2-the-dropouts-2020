@@ -175,38 +175,24 @@ public class Database : GLib.Object
     }
 
     public void delete_record(int record_id) {
-        Database db = new Database();
-        stdout.printf("%i\n", record_id);
-        string line = null;
-        m_log_file = FileStream.open("../data/logs/testLog","r+");
 
-        try {
-            //checks to see if file has line or not. Uses while loop to print all iterations to the console
-            
-            while((line = m_log_file.read_line())!=null){
-                
-                string[] vals = line.split(",");
-                int id = check_id_in_line(ref line);
-                foreach(unowned string db_content in vals){
-                    if( id == record_id ){
-                        //seek_to(record_id);
-                        //read_record(record_id);
-                        //stdout.printf("%s\n", db_content);
-                        string replace_content = db_content.replace(db_content, "null"); //Not Working Yet
-                        m_log_file.puts(replace_content);
-                        
-                    }
-                    
-                }
-                
-            }
-        } catch(Error e) {
-            stderr.printf("%s\n", e.message);
+        //Declare remove record string to delete the old information in the record
+        string remove_rec = record_id.to_string() + "," + "Deleted Record" + "\n";
+        //if statement checks if its reached the last record or not
+        if(record_id < m_last_record_id){
+            //Seeks file pointer to after the target ID
+            seek_to(record_id+1);
+            //appends the records after the updated record info
+            do{
+                remove_rec += m_log_file.read_line()+"\n";
+            } while(!m_log_file.eof());
         }
-
+        //move the file pointer back to the desired target ID
+        seek_to(record_id);
+        //replaces the record with remove_rec, effectively deleting the record
+        m_log_file.puts(remove_rec);
         stdout.printf("Deleted record!\n");
     }
-
 
     //deletes the .csv report in the data/export directory.
     /*User specifies which report is to be deleted in console (currently testing) 
