@@ -152,26 +152,22 @@ public class Database : GLib.Object
 
     public void edit_record(int record_id,ref string new_record)
     {
-        //go to specified line
+        //Prepare updated record
+        string updated_rec = record_id.to_string() + "," + new_record + "\n";
+        //Move FP to records after target_record
+        seek_to(record_id+1);
+        //Append records after updated record information
+        do {
+            updated_rec += m_log_file.read_line()+"\n";
+        } while (!m_log_file.eof());
+        //Move FP back to desired insertion point (start of target record)
         seek_to(record_id);
-
-        string? line = m_log_file.read_line();
-        long line_len = line.len();
-        long rec_len = new_record.len();
-
-        if (rec_len <= line_len){
-            m_log_file.seek((-1)*line_len-1,FileSeek.CUR);
-            string updated_rec = record_id.to_string() + "," + new_record;
-            m_log_file.puts(updated_rec);
-            stdout.printf("Record Updated!\n");
-        }
-        else {
-            //cannot update a string with extra characters than the original
-            stdout.printf("Error: String length overload. Update failed.");
-        }
-
-        //TO DO 1: Add method(s) to copy remainder of log after target record
-        //TO DO 2: Add cleanup method to remove excess characters
+        //Update Record
+        m_log_file.puts(updated_rec);
+        stdout.printf("Record Updated!\n");
+        
+        //TO DO: Add cleanup method to remove excess characters
+        //       Important for editing the last records of the file only
     }
 
     public void delete_record(int record_id) {
