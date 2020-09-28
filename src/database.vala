@@ -105,7 +105,6 @@ public class Database : GLib.Object
         stdout.printf("[%i]\t",m_log_file_id_pos); 
     }
     
-
     public void add_record(ref string rec_to_add)
     {
         //for testing purposes - adding a line to the file
@@ -119,7 +118,6 @@ public class Database : GLib.Object
         stdout.printf("Adding record!\n");
         m_log_file.flush();
     }
-
 
     public string? read_record(int record_id)
     {
@@ -171,9 +169,6 @@ public class Database : GLib.Object
             //cannot update a string with extra characters than the original
             stdout.printf("Error: String length overload. Update failed.");
         }
-
-        
-        //this leaves the cursor at the beggining of the next line after record_id
     }
 
     public void delete_record(int record_id) {
