@@ -1,16 +1,12 @@
 public class Database : GLib.Object
 {
     private FileStream m_log_file;
-<<<<<<< HEAD
-    private File m_logs_dir_checker;
-    private File m_export_dir_checker;
-    private int last_id;
-=======
+
     private File m_dir_checker;
     private int m_log_file_id_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line.
                                                     We can always get the absolute position using tell() */
     private int m_last_record_id;               /* Keep track of the last record ID added. Will only get incremented by add_record */
->>>>>>> master
+
     public Database(){
             //load an initial hardcoded file here, will add checks and stuff later
             //for now we assume there's no existing file, if there is we delete and start from scratch
@@ -64,9 +60,7 @@ public class Database : GLib.Object
         return id;
     }
 
-<<<<<<< HEAD
-    /* SPRINT 1 FUNCTIONALITY GOES HERE (i guess) */
-=======
+
 
     public void seek_to(int record_id)
     {
@@ -113,19 +107,12 @@ public class Database : GLib.Object
         }
         stdout.printf("[%i]\t",m_log_file_id_pos); 
     }
->>>>>>> master
+
     
     public void add_record(ref string rec_to_add)
     {
         //for testing purposes - adding a line to the file
-<<<<<<< HEAD
-     
-        string column = last_id.to_string() + "," + rec_to_add;
-        m_log_file.puts(column);
-        last_id++;
-        stdout.printf("Adding record!\n");
 
-=======
         stdout.printf("writing %i bytes\n",rec_to_add.length);
         m_log_file.seek(0,FileSeek.END);
         m_last_record_id++;
@@ -142,7 +129,7 @@ public class Database : GLib.Object
         //return record at line
         seek_to(record_id);
         return m_log_file.read_line();
->>>>>>> master
+
     }
 
     //For Add Record - prepend id to string
