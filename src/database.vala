@@ -6,6 +6,8 @@ public class Database : GLib.Object
     private int m_log_file_id_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line.
                                                     We can always get the absolute position using tell() */
     private int m_last_record_id;               /* Keep track of the last record ID added. Will only get incremented by add_record */
+    
+    
 
     public Database(){
             //load an initial hardcoded file here, will add checks and stuff later
