@@ -20,7 +20,6 @@ public class Database : GLib.Object
     if(m_log_file == null) stdout.printf("File not opened properly\n");
     stdout.printf("Opening log file\n");
     m_last_record_id = find_last_record_id();
-    stdout.printf("FAIL?\n");
     if(m_last_record_id > 0)
     {
         seek_to(m_last_record_id);
