@@ -66,13 +66,13 @@ int main(string[] args) {
            case 'r':   //read record
                 stdout.printf("Which record?\n");
                 string which_rec = stdin.read_line();
-                int id = which_rec[0].digit_value();
+                int id = int.parse(which_rec);
                 stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id));
                 break;
             case 'e': //edit record
                 stdout.printf("Which record? (By ID)\n");
                 string which_rec = stdin.read_line();
-                int id = which_rec[0].digit_value();
+                int id = int.parse(which_rec);
 
                 stdout.printf("New Item type: \n");
                 string item_type = stdin.read_line();
@@ -83,14 +83,14 @@ int main(string[] args) {
                 stdout.printf("New Price: \n");
                 string price = stdin.read_line();
 
-                string rec = item_type+","+quantity+","+price+"\n";
+                string rec = item_type+","+quantity+","+price;
 
                 myDb.edit_record(id, ref rec);
                 break;
-            case 'd':   //delete record (testing)
+            case 'd':   //delete record
                 stdout.printf("Which record?\n");
                 string which_rec = stdin.read_line();
-                int id = which_rec[0].digit_value();
+                int id = int.parse(which_rec);
                 stdout.printf("Deleting %i\n", id);
                 myDb.delete_record(id);
                 break;
@@ -110,7 +110,7 @@ int main(string[] args) {
                 int line_id = myDb.check_id_in_line(ref which_line);
                 stdout.printf("Record [ %s ] has id %i \n",which_line,line_id);
                 break;
-            case 'z':  //delete report (testing) NOTE: No double-check for deletion yet
+            case 'z':  //delete report
                 stdout.printf("Enter name of report: \n");
                 string record_name = stdin.read_line();
                 myDb.delete_report(record_name);

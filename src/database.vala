@@ -205,61 +205,43 @@ public class Database : GLib.Object
 
     public void edit_record(int record_id,ref string new_record)
     {
-        //go to specified line
+        //Prepare updated record
+        string updated_rec = record_id.to_string() + "," + new_record + "\n";
+        //Move FP to records after target_record
+        seek_to(record_id+1);
+        //Append records after updated record information
+        do {
+            updated_rec += m_log_file.read_line()+"\n";
+        } while (!m_log_file.eof());
+        //Move FP back to desired insertion point (start of target record)
         seek_to(record_id);
-
-        string? line = m_log_file.read_line();
-        long line_len = line.len();
-        long rec_len = new_record.len();
-
-        if (rec_len <= line_len){
-            m_log_file.seek((-1)*line_len-1,FileSeek.CUR);
-            string updated_rec = record_id.to_string() + "," + new_record;
-            m_log_file.puts(updated_rec);
-            stdout.printf("Record Updated!\n");
-        }
-        else {
-            //cannot update a string with extra characters than the original
-            stdout.printf("Error: String length overload. Update failed.");
-        }
-
-        //TO DO 1: Add method(s) to copy remainder of log after target record
-        //TO DO 2: Add cleanup method to remove excess characters
+        //Update Record
+        m_log_file.puts(updated_rec);
+        stdout.printf("Record Updated!\n");
+        
+        //TO DO: Add cleanup method to remove excess characters
+        //       Important for editing the last records of the file only
     }
 
     public void delete_record(int record_id) {
-        Database db = new Database();
-        stdout.printf("%i\n", record_id);
-        string line = null;
-        m_log_file = FileStream.open("../data/logs/testLog","r+");
 
-        try {
-            //checks to see if file has line or not. Uses while loop to print all iterations to the console
-            
-            while((line = m_log_file.read_line())!=null){
-                
-                string[] vals = line.split(",");
-                int id = check_id_in_line(ref line);
-                foreach(unowned string db_content in vals){
-                    if( id == record_id ){
-                        //seek_to(record_id);
-                        //read_record(record_id);
-                        //stdout.printf("%s\n", db_content);
-                        string replace_content = db_content.replace(db_content, "null"); //Not Working Yet
-                        m_log_file.puts(replace_content);
-                        
-                    }
-                    
-                }
-                
-            }
-        } catch(Error e) {
-            stderr.printf("%s\n", e.message);
+        //Declare remove record string to delete the old information in the record
+        string remove_rec = record_id.to_string() + "," + "Deleted Record" + "\n";
+        //if statement checks if its reached the last record or not
+        if(record_id < m_last_record_id){
+            //Seeks file pointer to after the target ID
+            seek_to(record_id+1);
+            //appends the records after the updated record info
+            do{
+                remove_rec += m_log_file.read_line()+"\n";
+            } while(!m_log_file.eof());
         }
-
+        //move the file pointer back to the desired target ID
+        seek_to(record_id);
+        //replaces the record with remove_rec, effectively deleting the record
+        m_log_file.puts(remove_rec);
         stdout.printf("Deleted record!\n");
     }
-
 
     //deletes the .csv report in the data/export directory.
     /*User specifies which report is to be deleted in console (currently testing) 
