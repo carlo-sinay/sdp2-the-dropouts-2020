@@ -17,6 +17,16 @@ void print_all(Database *db)
     stdout.printf("------------------------------\033[0m\n");
 }
 
+void list_all_items(Database* db)
+{
+    stdout.printf("\n\033[32m---------ITEMS----------\n");
+    for(int i = 0; i < 2; i++)
+    {
+        stdout.printf("Item no. [%i]: NAME: %s DESCRIPTION: %s COST: %i\n",i,item_list[i].name,item_list[i].description,item_list[i].price);
+    }
+    stdout.printf("------------------------\033[0m\n");
+}
+
 //Main Function
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
@@ -24,7 +34,18 @@ int main(string[] args) {
     //get console input for now
     while(true){
         print_all(myDb);
-        stdout.printf(" c - check line \n a - add record \n r - read record \n e - edit record \n q - exit\n d - delete record (testing)\n z - delete report (Testing)\n\n");
+        stdout.printf("
+                        c - check line\n
+                        a - add record\n
+                        r - read record\n
+                        e - edit record\n
+                        g - generate report\n
+                        i - list items\n
+                        d - delete record (testing)\n
+                        z - delete report (Testing)\n
+                        q - exit\n
+                      ");
+        stdout.printf("Option: ");
         string input = stdin.read_line();
         switch(input[0]){
             case 'a':   //add record
@@ -75,6 +96,13 @@ int main(string[] args) {
                 break;
             case 'q':   //exit
                 return 0;
+                break;
+            case 'i':   //exit
+                list_all_items(myDb);
+                break;
+            case 'g':   //generate report
+                stdout.printf("generating report\n");
+                myDb.generate_report();
                 break;
             case 'c':
                 stdout.printf("Type in test record. \n");
