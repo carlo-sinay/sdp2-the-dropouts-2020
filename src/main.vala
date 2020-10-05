@@ -9,10 +9,10 @@ void test_find_last_record_id(Database db){
 //Print out whole file
 void print_all(Database *db)
 {
-    stdout.printf("\n\033[32m---------ALL RECORDS----------\n");
+    stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_record_id);
     for(int i = 1; i <= db->last_record_id; i++)
     {
-        stdout.printf("\t[%s]\n",db->read_record(i));
+        stdout.printf("\t[%s]\n",db->read_record(i,1));
     }
     stdout.printf("------------------------------\033[0m\n");
 }
@@ -64,10 +64,13 @@ int main(string[] args) {
 
                 break;
            case 'r':   //read record
-                stdout.printf("Which record?\n");
+                stdout.printf("Which transaction?\n");
                 string which_rec = stdin.read_line();
                 int id = int.parse(which_rec);
-                stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id));
+                stdout.printf("Which item?\n");
+                string which_it = stdin.read_line();
+                int item_id = int.parse(which_it);
+                stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id,item_id));
                 break;
             case 'e': //edit record
                 stdout.printf("Which record? (By ID)\n");
