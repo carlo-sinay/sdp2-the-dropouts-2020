@@ -38,15 +38,9 @@ int main(string[] args) {
                 string price = stdin.read_line();
 
 
-                var now = new DateTime.now_local (); 
-                var date_year = now.get_year().to_string ();
-                var date_month = now.get_month().to_string ();
-                var date_day = now.get_day_of_month().to_string ();
 
-                string date = date_year + "-" + date_month + "-" + date_day;
+                string rec = item_type+","+quantity+","+price + "\n";
 
-                string rec = date+","+item_type+","+quantity+","+price + "\n";
-                
                 myDb.add_record(ref rec);
 
                 break;

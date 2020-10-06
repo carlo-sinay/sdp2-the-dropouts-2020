@@ -6,8 +6,8 @@ public class Database : GLib.Object
     private int m_log_file_id_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line.
                                                     We can always get the absolute position using tell() */
     private int m_last_record_id;               /* Keep track of the last record ID added. Will only get incremented by add_record */
-    
-    
+
+
 
     public Database(){
             //load an initial hardcoded file here, will add checks and stuff later
@@ -69,14 +69,14 @@ public class Database : GLib.Object
         m_log_file.rewind();
         long fp = 0;
         long len = 0;
-                
+
         int ch = m_log_file.getc();
         //Variable Size Container for ID
         var builder = new StringBuilder();
         builder.append_c((char)ch);
         //Set first ID
         int id = builder.str.to_int();
-        
+
         m_log_file.rewind();
 
         if (ch != (FileStream.EOF&0xFF)){
@@ -94,7 +94,7 @@ public class Database : GLib.Object
                 //Checks for first comma (',') in current line
                 while (ch != 0x2c) {
                     ch = m_log_file.getc();
-                    builder.append_c((char)ch);            
+                    builder.append_c((char)ch);
                 }
                 len = builder.str.len();
                 id = builder.str.to_int();
@@ -102,24 +102,62 @@ public class Database : GLib.Object
             //Move File Pointer back by length of ID
             m_log_file.seek((-1)*len,FileSeek.CUR);
             m_log_file_id_pos = id;
-            
+
             //DEBUG: Check File Pointer Position and curent ch as a HEX value
             //fp = m_log_file.tell();
             //stdout.printf("\033[31m FP: %ld | ch: 0x%02hhX\033[0m",fp,(char)ch);
         }
-        stdout.printf("[%i]\t",m_log_file_id_pos); 
+        stdout.printf("[%i]\t",m_log_file_id_pos);
     }
 
-    
+
     public void add_record(ref string rec_to_add)
     {
         //for testing purposes - adding a line to the file
+
+        var now = new DateTime.now_local ();
+        var date_year = now.get_year().to_string ();
+        var date_month = now.get_month().to_string ();
+        var date_day = now.get_day_of_month().to_string();
+        string lead = "0";
+        string fdate_day = "";
+        string fdate_month = "";
+        if (now.get_day_of_month() < 10)
+        {
+
+
+
+          fdate_day = lead.concat(date_day);
+
+        }
+        else
+        {
+          fdate_day = now.get_day_of_month().to_string();
+
+        }
+
+        if (now.get_month() < 10)
+        {
+
+
+
+          fdate_month = lead.concat(date_day);
+
+        }
+        else
+        {
+          fdate_month = now.get_month().to_string();
+
+        }
+
+
+        string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
         stdout.printf("writing %i bytes\n",rec_to_add.length);
         m_log_file.seek(0,FileSeek.END);
         m_last_record_id++;
         //m_log_file_id_pos = m_last_record_id;
-        string record = m_last_record_id.to_string() + "," + rec_to_add;
+        string record = m_last_record_id.to_string() + "," + date + "," + rec_to_add ;
         m_log_file.puts(record);
         seek_to(m_last_record_id);
         stdout.printf("Adding record!\n");
@@ -150,12 +188,12 @@ public class Database : GLib.Object
 
         fields = ln.split(",",2);
         id = int.parse(fields[0]);
-        
+
         stdout.printf("Last ID found: %i\n",id);
         //return the file indicator back where it was.
         //seek_to(m_log_file_id_pos);
         return id;
-        
+
     }
 
     public void edit_record(int record_id,ref string new_record)
@@ -190,9 +228,9 @@ public class Database : GLib.Object
 
         try {
             //checks to see if file has line or not. Uses while loop to print all iterations to the console
-            
+
             while((line = m_log_file.read_line())!=null){
-                
+
                 string[] vals = line.split(",");
                 int id = check_id_in_line(ref line);
                 foreach(unowned string db_content in vals){
@@ -202,11 +240,11 @@ public class Database : GLib.Object
                         //stdout.printf("%s\n", db_content);
                         string replace_content = db_content.replace(db_content, "null"); //Not Working Yet
                         m_log_file.puts(replace_content);
-                        
+
                     }
-                    
+
                 }
-                
+
             }
         } catch(Error e) {
             stderr.printf("%s\n", e.message);
@@ -217,7 +255,7 @@ public class Database : GLib.Object
 
 
     //deletes the .csv report in the data/export directory.
-    /*User specifies which report is to be deleted in console (currently testing) 
+    /*User specifies which report is to be deleted in console (currently testing)
     then it passes into File.new_for_path which just points to the directory and delete it*/
     public void delete_report(string report_name){
         //Goes to file path of the report to delete. Takes input from user
