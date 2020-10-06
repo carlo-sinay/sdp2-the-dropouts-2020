@@ -223,7 +223,7 @@ public class Database : GLib.Object
         //       Important for editing the last records of the file only
     }
 
-    public void delete_record(int record_id) {
+    public void delete_record(int record_id) { //Must be changed 
 
         //Declare remove record string to delete the old information in the record
         string remove_rec = record_id.to_string() + "," + "Deleted Record" + "\n";
@@ -242,6 +242,23 @@ public class Database : GLib.Object
         m_log_file.puts(remove_rec);
         stdout.printf("Deleted record!\n");
     }
+
+
+    /*Delete Transaction:
+    Needs to take in both transaction_id and item_id
+    needs to keep the trailing zeros as there's a format for the record
+    Will have to check for trailing zeros  by checking if the int at the location is 0 or higher than 0
+    if its 0 - check the next number; else thats the ID; if 2nd num is zero; then the last number will be between 1-9; else its the ID.
+    Do for both transaction deletion and ID deletion
+    Example for deleting entire transaction:
+    E.g.:   001,[DELETED] (commits the rest of transaction_id 001)
+    Example for deleting an item within the transaction:
+    001,069,ITM,99,2130,2020-10-03
+    001,098,[DELETED]
+    001,420,ITM,10,2143,2020-10-03
+    */
+
+
 
     //deletes the .csv report in the data/export directory.
     /*User specifies which report is to be deleted in console (currently testing) 
