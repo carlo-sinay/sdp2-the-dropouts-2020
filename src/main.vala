@@ -6,6 +6,26 @@ void test_find_last_record_id(Database db){
     stdout.printf("Last ID: %d\n",id);
 }
 
+void test_stringbuilder(){
+    string? test = "001";
+    var builder = new StringBuilder();
+
+    int i = 0;
+    while (i < test.char_count()){
+        builder.append_c(test[i]);
+        i++;
+    }
+
+    stdout.printf("builder: [%s]",builder.str);
+    stdout.printf("\n To Int: [%d]",builder.str.to_int());
+}
+
+void test_padding(){
+    stdout.printf("\n\n\n");
+}
+
+
+
 //Print out whole file
 void print_all(Database *db)
 {
@@ -31,6 +51,11 @@ void list_all_items(Database* db)
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
+    //Put test Functions between the test padding
+    //test_padding();
+    //test_stringbuilder();
+    //test_padding();
+
     //get console input for now
     while(true){
         print_all(myDb);
