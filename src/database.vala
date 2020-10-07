@@ -164,6 +164,57 @@ public class Database : GLib.Object
         m_log_file.flush();
     }
 
+    public void add_items(ref string data_add )
+    {
+      var now = new DateTime.now_local ();
+      var date_year = now.get_year().to_string ();
+      var date_month = now.get_month().to_string ();
+      var date_day = now.get_day_of_month().to_string();
+      string lead = "0";
+      string fdate_day = "";
+      string fdate_month = "";
+      if (now.get_day_of_month() < 10)
+      {
+
+
+
+        fdate_day = lead.concat(date_day);
+
+      }
+      else
+      {
+        fdate_day = now.get_day_of_month().to_string();
+
+      }
+
+      if (now.get_month() < 10)
+      {
+
+
+
+        fdate_month = lead.concat(date_day);
+
+      }
+      else
+      {
+        fdate_month = now.get_month().to_string();
+
+      }
+
+
+      string date = date_year + "-" + fdate_month + "-" + fdate_day;
+
+
+      m_log_file.seek(0,FileSeek.END);
+      string data = m_last_record_id.to_string() + "," + date + "," + data_add;
+      m_log_file.puts(data);
+      seek_to(m_last_record_id);
+      stdout.printf("Adding item to the same transaction item id!\n");
+      m_log_file.flush();
+
+    }
+
+
     public string? read_record(int record_id)
     {
         //return record at line

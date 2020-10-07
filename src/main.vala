@@ -43,6 +43,27 @@ int main(string[] args) {
 
                 myDb.add_record(ref rec);
 
+                stdout.printf("Do you want to add another record?\n\n");
+                string read = stdin.read_line();
+                if(read == "yes")
+                {
+                  stdout.printf("Item type: \n");
+                  string item_type2 = stdin.read_line();
+
+                  stdout.printf("Quantity: \n");
+                  string quantity2 = stdin.read_line();
+
+                  stdout.printf("Price: \n");
+                  string price2 = stdin.read_line();
+
+                  string data = item_type2+","+quantity2+","+price2 + "\n";
+
+                  myDb.add_items(ref data);
+                }
+
+
+
+
                 break;
            case 'r':   //read record
                 stdout.printf("Which record?\n");
