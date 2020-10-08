@@ -25,8 +25,9 @@
       </row>
     </data>
   </object>
-  <object class="GtkWindow">
+  <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
+    <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -124,7 +125,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="add_btn">
                     <property name="label">gtk-add</property>
                     <property name="width_request">70</property>
                     <property name="height_request">40</property>
@@ -132,6 +133,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="use_stock">True</property>
+                    <signal name="clicked" handler="on_add_btn_click" swapped="no"/>
                   </object>
                   <packing>
                     <property name="x">40</property>
@@ -139,7 +141,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="edit_btn">
                     <property name="label">gtk-edit</property>
                     <property name="width_request">70</property>
                     <property name="height_request">40</property>
@@ -147,6 +149,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="use_stock">True</property>
+                    <signal name="clicked" handler="on_edit_btn_click" swapped="no"/>
                   </object>
                   <packing>
                     <property name="x">120</property>

@@ -1,3 +1,4 @@
 #ignoring compiler or program generated files
 build/*
 data/*
+glade/*~
