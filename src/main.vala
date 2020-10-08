@@ -1,18 +1,47 @@
 //Test Functions
 //Testing - Find last record id
-void test_find_last_record_id(Database db){
-    int id = db.find_last_record_id();
+void test_find_last_record_id(Database *db){
+    int id = db->find_last_record_id();
 
     stdout.printf("Last ID: %d\n",id);
 }
 
+void test_find_last_item_id(Database *db, int i){
+    int id = db->find_last_item_id(i);
+
+    stdout.printf("Last itm ID: %d\n",id);
+}
+
+void test_stringbuilder(){
+    string? test = "001";
+    var builder = new StringBuilder();
+
+    int i = 0;
+    while (i < test.char_count()){
+        builder.append_c(test[i]);
+        i++;
+    }
+
+    stdout.printf("builder: [%s]",builder.str);
+    stdout.printf("\n To Int: [%d]",builder.str.to_int());
+}
+
+void test_padding(){
+    stdout.printf("\n\n\n");
+}
+
+
+
 //Print out whole file
 void print_all(Database *db)
 {
-    stdout.printf("\n\033[32m---------ALL RECORDS----------\n");
+    stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_record_id);
     for(int i = 1; i <= db->last_record_id; i++)
     {
-        stdout.printf("\t[%s]\n",db->read_record(i));
+        stdout.printf("\t[%s]\n",db->read_record(i,1));
+        if (i == 1){
+            stdout.printf("\t[%s]\n",db->read_record(i,2));
+        }
     }
     stdout.printf("------------------------------\033[0m\n");
 }
@@ -31,6 +60,14 @@ void list_all_items(Database* db)
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
+    //Put test Functions between the test padding
+    //test_padding();
+    //test_find_last_item_id(myDb,1);
+    //test_find_last_item_id(myDb,2);
+    //test_find_last_item_id(myDb,3);
+    //test_stringbuilder();
+    //test_padding();
+
     //get console input for now
     while(true){
         print_all(myDb);
@@ -64,10 +101,13 @@ int main(string[] args) {
 
                 break;
            case 'r':   //read record
-                stdout.printf("Which record?\n");
+                stdout.printf("Which transaction?\n");
                 string which_rec = stdin.read_line();
                 int id = int.parse(which_rec);
-                stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id));
+                stdout.printf("Which item?\n");
+                string which_it = stdin.read_line();
+                int item_id = int.parse(which_it);
+                stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id,item_id));
                 break;
             case 'e': //edit record
                 stdout.printf("Which record? (By ID)\n");
