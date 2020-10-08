@@ -1,18 +1,5 @@
 public class Database : GLib.Object
 {
-<<<<<<< HEAD
-    private long fp = 0;
-    private FileStream m_log_file;  
-    private FileStream m_report;
-    private string column_titles = "Item,Quantity,Price\n";
-    private File m_dir_checker;
-    private int m_log_file_id_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line.
-                                                    We can always get the absolute position using tell() */
-    private int m_last_record_id;               /* Keep track of the last record ID added. Will only get incremented by add_record */
-    private int m_next_report_id;               /* keep track of current report to make */
-    public Database(){
-            //load an initial hardcoded file here, will add checks and stuff later
-=======
    private FileStream m_log_file;
    private FileStream m_report;
    private string column_titles = "Item,Quantity,Price\n";
@@ -25,7 +12,6 @@ public class Database : GLib.Object
    private int m_next_report_id;                /* keep track of current report to make */
    public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
->>>>>>> andrej
          //for now we assume there's no existing file, if there is we delete and start from scratch
     stdout.printf("Checking if log file exists...\n");
     string filename1 = "../data/logs/"; 
