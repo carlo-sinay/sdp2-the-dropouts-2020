@@ -1,10 +1,36 @@
 //Test Functions
 //Testing - Find last record id
-void test_find_last_record_id(Database db){
-    int id = db.find_last_record_id();
+void test_find_last_record_id(Database *db){
+    int id = db->find_last_record_id();
 
     stdout.printf("Last ID: %d\n",id);
 }
+
+void test_find_last_item_id(Database *db, int i){
+    int id = db->find_last_item_id(i);
+
+    stdout.printf("Last itm ID: %d\n",id);
+}
+
+void test_stringbuilder(){
+    string? test = "001";
+    var builder = new StringBuilder();
+
+    int i = 0;
+    while (i < test.char_count()){
+        builder.append_c(test[i]);
+        i++;
+    }
+
+    stdout.printf("builder: [%s]",builder.str);
+    stdout.printf("\n To Int: [%d]",builder.str.to_int());
+}
+
+void test_padding(){
+    stdout.printf("\n\n\n");
+}
+
+
 
 //Print out whole file
 void print_all(Database *db)
@@ -13,6 +39,9 @@ void print_all(Database *db)
     for(int i = 1; i <= db->last_record_id; i++)
     {
         stdout.printf("\t[%s]\n",db->read_record(i,1));
+        if (i == 1){
+            stdout.printf("\t[%s]\n",db->read_record(i,2));
+        }
     }
     stdout.printf("------------------------------\033[0m\n");
 }
@@ -31,6 +60,14 @@ void list_all_items(Database* db)
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
+    //Put test Functions between the test padding
+    //test_padding();
+    //test_find_last_item_id(myDb,1);
+    //test_find_last_item_id(myDb,2);
+    //test_find_last_item_id(myDb,3);
+    //test_stringbuilder();
+    //test_padding();
+
     //get console input for now
     while(true){
         print_all(myDb);
