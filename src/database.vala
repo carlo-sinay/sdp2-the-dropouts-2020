@@ -115,18 +115,18 @@ public class Database : GLib.Object
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
-        stdout.printf("[%i,%i]\t",tr_id,it_id); 
+        //stdout.printf("[%i,%i]\t",tr_id,it_id); 
         if(tr_id == 1) return;      //start of file is ID 1
         m_log_file_tid_pos = 1;
         string? line = null, temp = null;
-        string[2]? vals = {"",""};
+        string[3]? vals = {"","",""};
         int t_id = 1, i_id = 1;
         char ch=0;
         while((temp = m_log_file.read_line ()) != null){
             line = temp;
             //read till we get null string (EOF)
             //line = temp;
-            vals = line.split(",",2);
+            vals = line.split(",",3);
             t_id = int.parse(vals[0]);
             i_id = int.parse(vals[1]);
             if(t_id == tr_id && i_id == it_id){
@@ -163,12 +163,39 @@ public class Database : GLib.Object
         return m_log_file.read_line();
     }
 
+    public int find_last_item_id(int tr_id)
+    {
+        int itm_id = 1;
+        int t_id = tr_id;
+        //Store String and Split fields
+        string? line = null;
+        string[3] fields = {"","",""};
+        //Seek To Target Transaction
+        seek_to(t_id,itm_id);
+        //Break Points Inserted (Optimise later)
+        while (true){
+            //Clear Fields
+            fields = {"","",""};
+            line = m_log_file.read_line();
+            //EOF Check
+            if (line == null) {break;}
+            fields = line.split(",",3);
+            t_id = int.parse(fields[0]);
+            //Check we're still in the same transaction
+            if (t_id != tr_id){break;}
+            //If we are, assign itm_id            
+            itm_id = int.parse(fields[1]);         
+        }
+        //m_log_file.rewind();
+        return itm_id;
+    }
+
     //changed to modify member variables directly as well as return them (for now)
     public int find_last_record_id()
     {
         string? ln_chkr = null;
         string? ln = null;
-        string[2] fields = {"",""};
+        string[3] fields = {"","",""};
         int id = 0;
 
         //small check here to return 0 if file is empty. -andrej
@@ -184,7 +211,7 @@ public class Database : GLib.Object
             continue;
         }
 
-        fields = ln.split(",",2);
+        fields = ln.split(",",3);
         id = int.parse(fields[0]);
         m_last_transaction_id = int.parse(fields[0]);
         m_last_item_id = int.parse(fields[1]);
