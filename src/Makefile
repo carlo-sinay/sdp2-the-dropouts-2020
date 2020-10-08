@@ -6,6 +6,7 @@ COMPILER_FLAGS=--pkg ${GTK_PKG_FLAG}
 BUILD_DIR := ../build
 SRC_FILES += \
   main.vala \
+  items.vala \
   database.vala\
 
 all: mkdir ${PROJECT}
