@@ -1,16 +1,6 @@
 public class Database : GLib.Object
 {
     private FileStream m_log_file;
-<<<<<<< HEAD
-
-    private File m_dir_checker;
-    private int m_log_file_id_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line.
-                                                    We can always get the absolute position using tell() */
-    private int m_last_record_id;               /* Keep track of the last record ID added. Will only get incremented by add_record */
-
-
-
-=======
     private FileStream m_report;
     private string column_titles = "Item,Quantity,Price\n";
     private File m_dir_checker;
@@ -20,14 +10,13 @@ public class Database : GLib.Object
     private int m_last_transaction_id;           /* Keep track of the last transaction ID added. Will only get incremented by add_record */
     private int m_last_item_id;                  /* Keep track of the last id (in the last trans) ID added. Will only get incremented by add_record */
     private int m_next_report_id;                /* keep track of current report to make */
->>>>>>> master
     public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
          //for now we assume there's no existing file, if there is we delete and start from scratch
     stdout.printf("Checking if log file exists...\n");
-    string filename1 = "../data/logs/"; 
+    string filename1 = "../data/logs/";
     file_check(ref filename1, 1);                  //check if logs dir exists
-    string filename2 = "../data/logs/testLog"; 
+    string filename2 = "../data/logs/testLog";
     file_check(ref filename2, 0);                  //create log file if not there
     m_log_file = FileStream.open(filename2,"r+");
     if(m_log_file == null) stdout.printf("File not opened properly\n");
@@ -50,7 +39,7 @@ public class Database : GLib.Object
             //1 = dir
             //return 0 on success
             //string path = filename;
-            File temp = File.new_for_path(filename);            
+            File temp = File.new_for_path(filename);
 
             if(temp.query_exists()) return 1;           //file already exists
             else
@@ -62,16 +51,16 @@ public class Database : GLib.Object
                 } else {
                     //its a file and it doesn't exist
                     temp.create(FileCreateFlags.NONE);
-                } 
+                }
             }
             return temp.query_exists() ? 0 : 1;
     }
     //Call to show Position of File Pointer in terminal
     private void debug_show_fp(){
         long fp = m_log_file.tell();
-        stdout.printf("\n\033[32m FP: [%ld]\033[0m", fp);      
+        stdout.printf("\n\033[32m FP: [%ld]\033[0m", fp);
     }
-    
+
     public int generate_report()
     {
         //generate pretty report with all records currently
@@ -104,7 +93,7 @@ public class Database : GLib.Object
         //right now just makes it all uppercase, later we'll replace with
         //actual item name strings (when we also have item Codes)
         seek_to(record_id,1);
-        string line = m_log_file.read_line();        
+        string line = m_log_file.read_line();
         string[] vals = line.split(",");
         line = "";
         for(int i = 0; i < vals.length; i++)
@@ -116,7 +105,7 @@ public class Database : GLib.Object
         expanded = line+"\n";
         return 0;
     }
- 
+
     public int check_id_in_line(ref string line)
     {
         //check the ID at the start of the given string
@@ -125,62 +114,12 @@ public class Database : GLib.Object
         int id = int.parse(fields[0]);
         return id;
     }
-<<<<<<< HEAD
 
-
-
-    public void seek_to(int record_id)
-=======
-    
     public void seek_to(int tr_id, int it_id)
->>>>>>> master
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
-<<<<<<< HEAD
-        long fp = 0;
-        long len = 0;
-
-        int ch = m_log_file.getc();
-        //Variable Size Container for ID
-        var builder = new StringBuilder();
-        builder.append_c((char)ch);
-        //Set first ID
-        int id = builder.str.to_int();
-
-        m_log_file.rewind();
-
-        if (ch != (FileStream.EOF&0xFF)){
-            //Checks for sought ID
-            while (id != record_id) {
-                //Ignores clearing StringBuilder for first ID
-                if (record_id != 1) {
-                    len = builder.str.len();
-                    builder.erase(0,len);
-                }
-                //Checks for New Line ('\n')
-                while (ch != 0x0a) {
-                    ch = m_log_file.getc();
-                }
-                //Checks for first comma (',') in current line
-                while (ch != 0x2c) {
-                    ch = m_log_file.getc();
-                    builder.append_c((char)ch);
-                }
-                len = builder.str.len();
-                id = builder.str.to_int();
-            }
-            //Move File Pointer back by length of ID
-            m_log_file.seek((-1)*len,FileSeek.CUR);
-            m_log_file_id_pos = id;
-
-            //DEBUG: Check File Pointer Position and curent ch as a HEX value
-            //fp = m_log_file.tell();
-            //stdout.printf("\033[31m FP: %ld | ch: 0x%02hhX\033[0m",fp,(char)ch);
-        }
-        stdout.printf("[%i]\t",m_log_file_id_pos);
-=======
-        //stdout.printf("[%i,%i]\t",tr_id,it_id); 
+        //stdout.printf("[%i,%i]\t",tr_id,it_id);
         if(tr_id == 1) return;      //start of file is ID 1
         m_log_file_tid_pos = 1;
         string? line = null, temp = null;
@@ -205,7 +144,6 @@ public class Database : GLib.Object
             m_log_file.seek(-2,FileSeek.CUR);
             ch = (char)m_log_file.getc();
         }
->>>>>>> master
     }
 
 
@@ -253,22 +191,15 @@ public class Database : GLib.Object
 
         stdout.printf("writing %i bytes\n",rec_to_add.length);
         m_log_file.seek(0,FileSeek.END);
-<<<<<<< HEAD
-        m_last_record_id++;
-        //m_log_file_id_pos = m_last_record_id;
-        string record = m_last_record_id.to_string() + "," + date + "," + rec_to_add ;
-=======
         m_last_transaction_id++;
         //m_log_file_tid_pos = m_last_transaction_id;
-        string record = m_last_transaction_id.to_string() + "," + rec_to_add;
->>>>>>> master
+        string record = m_last_transaction_id.to_string() + "," + date + "," + rec_to_add;
         m_log_file.puts(record);
         seek_to(m_last_transaction_id,1);
         stdout.printf("Adding record!\n");
         m_log_file.flush();
     }
 
-<<<<<<< HEAD
     public void add_items(ref string data_add )
     {
       var now = new DateTime.now_local ();
@@ -321,9 +252,6 @@ public class Database : GLib.Object
 
 
     public string? read_record(int record_id)
-=======
-    public string? read_record(int record_id, int item_id)
->>>>>>> master
     {
         //return record at line
         seek_to(record_id,item_id);
@@ -351,8 +279,8 @@ public class Database : GLib.Object
             t_id = int.parse(fields[0]);
             //Check we're still in the same transaction
             if (t_id != tr_id){break;}
-            //If we are, assign itm_id            
-            itm_id = int.parse(fields[1]);         
+            //If we are, assign itm_id
+            itm_id = int.parse(fields[1]);
         }
         //m_log_file.rewind();
         return itm_id;
@@ -367,13 +295,13 @@ public class Database : GLib.Object
         int id = 0;
 
         //small check here to return 0 if file is empty. -andrej
-        if(m_log_file.getc() == -1){            
+        if(m_log_file.getc() == -1){
             m_log_file.seek(-1,FileSeek.CUR);
             return 0;
         }
         //If not empty
         m_log_file.rewind();
-       
+
         while ((ln_chkr = m_log_file.read_line())!= null) {
             ln = ln_chkr;
             continue;
@@ -381,22 +309,13 @@ public class Database : GLib.Object
 
         fields = ln.split(",",3);
         id = int.parse(fields[0]);
-<<<<<<< HEAD
-
-        stdout.printf("Last ID found: %i\n",id);
-=======
         m_last_transaction_id = int.parse(fields[0]);
         m_last_item_id = int.parse(fields[1]);
-        
+
         stdout.printf("Last record found: trans id: %i, item id: %i\n",m_last_transaction_id,m_last_item_id);
->>>>>>> master
         //return the file indicator back where it was.
         //seek_to(m_log_file_tid_pos);
         return id;
-<<<<<<< HEAD
-
-=======
->>>>>>> master
     }
 
     public void edit_record(int record_id,ref string new_record)
@@ -414,37 +333,13 @@ public class Database : GLib.Object
         //Update Record
         m_log_file.puts(updated_rec);
         stdout.printf("Record Updated!\n");
-        
+
         //TO DO: Add cleanup method to remove excess characters
         //       Important for editing the last records of the file only
     }
 
     public void delete_record(int record_id) {
 
-<<<<<<< HEAD
-        try {
-            //checks to see if file has line or not. Uses while loop to print all iterations to the console
-
-            while((line = m_log_file.read_line())!=null){
-
-                string[] vals = line.split(",");
-                int id = check_id_in_line(ref line);
-                foreach(unowned string db_content in vals){
-                    if( id == record_id ){
-                        //seek_to(record_id);
-                        //read_record(record_id);
-                        //stdout.printf("%s\n", db_content);
-                        string replace_content = db_content.replace(db_content, "null"); //Not Working Yet
-                        m_log_file.puts(replace_content);
-
-                    }
-
-                }
-
-            }
-        } catch(Error e) {
-            stderr.printf("%s\n", e.message);
-=======
         //Declare remove record string to delete the old information in the record
         string remove_rec = record_id.to_string() + "," + "Deleted Record" + "\n";
         //if statement checks if its reached the last record or not
@@ -455,7 +350,6 @@ public class Database : GLib.Object
             do{
                 remove_rec += m_log_file.read_line()+"\n";
             } while(!m_log_file.eof());
->>>>>>> master
         }
         //move the file pointer back to the desired target ID
         seek_to(record_id,1);
