@@ -1,9 +1,15 @@
 //Test Functions
 //Testing - Find last record id
-void test_find_last_record_id(Database db){
-    int id = db.find_last_record_id();
+void test_find_last_record_id(Database *db){
+    int id = db->find_last_record_id();
 
     stdout.printf("Last ID: %d\n",id);
+}
+
+void test_find_last_item_id(Database *db, int i){
+    int id = db->find_last_item_id(i);
+
+    stdout.printf("Last itm ID: %d\n",id);
 }
 
 void test_stringbuilder(){
@@ -33,6 +39,9 @@ void print_all(Database *db)
     for(int i = 1; i <= db->last_record_id; i++)
     {
         stdout.printf("\t[%s]\n",db->read_record(i,1));
+        if (i == 1){
+            stdout.printf("\t[%s]\n",db->read_record(i,2));
+        }
     }
     stdout.printf("------------------------------\033[0m\n");
 }
@@ -53,6 +62,9 @@ int main(string[] args) {
     Database myDb = new Database();         //opened file
     //Put test Functions between the test padding
     //test_padding();
+    //test_find_last_item_id(myDb,1);
+    //test_find_last_item_id(myDb,2);
+    //test_find_last_item_id(myDb,3);
     //test_stringbuilder();
     //test_padding();
 
