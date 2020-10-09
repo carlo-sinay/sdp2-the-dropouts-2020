@@ -177,7 +177,7 @@ public class Database : GLib.Object
         //Seek To Target Transaction
         seek_to(t_id,itm_id);
         //Break Points Inserted (Optimise later)
-        while (true){
+        do{
             //Clear Fields
             fields = {"","",""};
             line = m_log_file.read_line();
@@ -189,7 +189,7 @@ public class Database : GLib.Object
             if (t_id != tr_id){break;}
             //If we are, assign itm_id            
             itm_id = int.parse(fields[1]);         
-        }
+        }while(!m_log_file.eof());
         //m_log_file.rewind();
         return itm_id;
     }
@@ -251,8 +251,8 @@ public class Database : GLib.Object
         seek_to(transaction_id,1);
         int itm_id = 1;
         int t_id = transaction_id;
-        string dump = null;
-        string line = null;
+        string dump = "";
+        string line;
         string[3] fields = null;
 
         do{
@@ -267,23 +267,22 @@ public class Database : GLib.Object
             if (t_id != transaction_id){break;}
             //If we are, assign itm_id            
             itm_id = int.parse(fields[1]);
-            if(t_id <= itm_id) {dump += line;}
-            stdout.printf("%s\n",line);
-            whitespace_padding(line.length);
-            
-            stdout.printf("Lines: %d\n", line.length);
-            
+            stdout.printf("Item ID: %d\n", itm_id);
+            if(t_id < itm_id) {dump += line;}
+            stdout.printf("DUMP LINE: %s\n", dump);
+            stdout.printf("DUMP LENGTH: %d\n", dump.length);
+            whitespace_padding(dump.length);
 
         }while(!m_log_file.eof());
 
-        
+        stdout.printf("LAST ITEM ID TEST: %d\n", find_last_item_id(transaction_id));
 
         //Read every line of file and add to 'dump' until next transaction ID
         //Take size of dump and call whitespace_padding(dump.size())
 
         do{
             line = m_log_file.read_line();
-            stdout.printf("%s\n", line);
+            //stdout.printf("%s\n", line);
         }while(!m_log_file.eof());
 
         //Declare remove record string to delete the old information in the record
