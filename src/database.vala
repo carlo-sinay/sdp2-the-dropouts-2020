@@ -1,5 +1,6 @@
 public class Database : GLib.Object
 {
+    //Variables
     private FileStream m_log_file;
     private FileStream m_report;
     private string column_titles = "Item,Quantity,Price\n";
@@ -10,6 +11,10 @@ public class Database : GLib.Object
     private int m_last_transaction_id;           /* Keep track of the last transaction ID added. Will only get incremented by add_record */
     private int m_last_item_id;                  /* Keep track of the last id (in the last trans) ID added. Will only get incremented by add_record */
     private int m_next_report_id;                /* keep track of current report to make */
+
+    private List<Item> items;
+
+    //Constructor
     public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
          //for now we assume there's no existing file, if there is we delete and start from scratch
@@ -30,8 +35,15 @@ public class Database : GLib.Object
     }
     string filename3 = "../data/export/";
     file_check(ref filename3,1);             //check if export dir exists if not create it
+    
+    items = new List<Item>();
+    make_item_list();
+    
     m_next_report_id = 1;
     }
+
+
+    //Functions
     private int file_check(ref string filename, int file_or_dir)
     {
             //checks if file (or directory exists) and then creates it if it doesn't (creates dir with parents if dir)
@@ -143,6 +155,7 @@ public class Database : GLib.Object
                 m_log_file_tid_pos = t_id;
                 m_log_file_iid_pos = i_id;
                 //stdout.printf("t_id: [%d] | i_id: [%d]",t_id,i_id);
+                //Move File Pointer Back to start of line
                 m_log_file.seek(-31,FileSeek.CUR);
                 break;
             }
@@ -281,6 +294,32 @@ public class Database : GLib.Object
         } catch(Error err){
             stdout.printf("Error: %s\n", err.message);
         }
+    }
+
+    private void make_item_list(){
+        string filename = "../data/itemList";
+        file_check(ref filename, 0);
+        FileStream file = FileStream.open(filename,"r");
+        if(file == null) stdout.printf("File not opened properly\n");
+
+        string? line = null, temp = null;
+        string[4] fields;
+
+        while ((line = file.read_line())!=null){
+            temp = line;
+            fields = line.split(",",4);
+            Item itm = new Item(int.parse(fields[0]), fields[1],fields[2],int.parse(fields[3]));
+            
+            items.append(itm);
+        }
+    }
+
+    public Item get_item(int index){
+        return items.nth_data(index);
+    }
+
+    public int get_list_length(){
+        return (int)items.length();
     }
 
     /* getters and setters */
