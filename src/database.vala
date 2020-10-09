@@ -127,33 +127,26 @@ public class Database : GLib.Object
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
-        //stdout.printf("[%i,%i]\t",tr_id,it_id); 
-        //if(tr_id == 1) return;      //start of file is ID 1
         m_log_file_tid_pos = 1;
         string? line = null, temp = null;
         string[3]? vals = {"","",""};
         int t_id = 1, i_id = 1;
         char ch=0;
-        while((temp = m_log_file.read_line ()) != null){
+        while((temp = m_log_file.read_line()) != null){
             line = temp;
             //read till we get null string (EOF)
             vals = line.split(",",3);
             t_id = int.parse(vals[0]);
             i_id = int.parse(vals[1]);
-            //stdout.printf("t_id: [%d] | i_id: [%d]",t_id,i_id);
+            
             if((t_id == tr_id) && (i_id == it_id)){
                 m_log_file_tid_pos = t_id;
                 m_log_file_iid_pos = i_id;
+                //stdout.printf("t_id: [%d] | i_id: [%d]",t_id,i_id);
+                m_log_file.seek(-31,FileSeek.CUR);
                 break;
             }
         }
-        //  //we found the string, put cursor back a line
-        //  while(ch != '\n'){
-        //      debug_show_fp();
-        //      m_log_file.seek(-2,FileSeek.CUR);
-        //      debug_show_fp();
-        //      ch = (char)m_log_file.getc();
-        //  }
     }
     
     public void add_record(ref string rec_to_add)
