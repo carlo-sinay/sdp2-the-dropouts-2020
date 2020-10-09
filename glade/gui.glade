@@ -3,26 +3,30 @@
 <!--*- mode: xml -*-->
 <interface>
   <requires lib="gtk+" version="3.12"/>
-  <object class="GtkListStore" id="liststore2">
+  <object class="GtkListStore" id="itemliststore">
     <columns>
-      <!-- column-name Item -->
+      <!-- column-name Name -->
       <column type="gchararray"/>
-      <!-- column-name Quantity -->
-      <column type="gint"/>
-      <!-- column-name Price -->
-      <column type="gfloat"/>
     </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Asprin</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Asproclear</col>
+      </row>
+    </data>
   </object>
   <object class="GtkTreeStore" id="mytreestore">
     <columns>
-      <!-- column-name Transaction ID -->
+      <!-- column-name TransactionID -->
       <column type="gchararray"/>
       <!-- column-name Item -->
       <column type="gchararray"/>
       <!-- column-name Quantity -->
-      <column type="gint"/>
+      <column type="gchararray"/>
       <!-- column-name Price -->
-      <column type="gfloat"/>
+      <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkWindow" id="window">
@@ -187,7 +191,7 @@
                     <property name="height_request">25</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">Qty</property>
+                    <property name="placeholder_text" translatable="yes">Quantity</property>
                   </object>
                   <packing>
                     <property name="x">70</property>
@@ -203,23 +207,6 @@
                   <packing>
                     <property name="x">10</property>
                     <property name="y">185</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBoxText">
-                    <property name="width_request">200</property>
-                    <property name="height_request">5</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <items>
-                      <item translatable="yes">Aspirin</item>
-                      <item translatable="yes">Panadol</item>
-                      <item translatable="yes">Condom</item>
-                    </items>
-                  </object>
-                  <packing>
-                    <property name="x">70</property>
-                    <property name="y">135</property>
                   </packing>
                 </child>
                 <child>
@@ -241,6 +228,25 @@
                   <packing>
                     <property name="x">130</property>
                     <property name="y">25</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="itemlistchooser">
+                    <property name="width_request">200</property>
+                    <property name="height_request">25</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="model">itemliststore</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cbrenderer"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="x">70</property>
+                    <property name="y">130</property>
                   </packing>
                 </child>
               </object>

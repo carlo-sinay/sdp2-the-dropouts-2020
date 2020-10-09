@@ -18,6 +18,6 @@ mkdir:
 	mkdir -p ../build
 
 gui: mkdir
-	${COMPILER} --pkg ${GTK_PKG_FLAG} --pkg gmodule-2.0 GUI.vala -o ${BUILD_DIR}/${GUI_APP}
+	${COMPILER} --pkg ${GTK_PKG_FLAG} --pkg gmodule-2.0 GUI.vala database.vala items.vala -o ${BUILD_DIR}/${GUI_APP}
 gui-c: mkdir
 	${COMPILER} --pkg ${GTK_PKG_FLAG} --pkg gmodule-2.0 GUI.vala -C

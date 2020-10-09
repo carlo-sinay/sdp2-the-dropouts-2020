@@ -8,9 +8,9 @@ public struct item_t {
 
 const item_t item_list[2] = {
     {
-        "Item1", "Item 1 description", 100
+        "Item1", "Item 1 description", 199
     },
     {
-        "Item2", "Item 2 description", 200
+        "Item2", "Item 2 description", 299
     },
 };
