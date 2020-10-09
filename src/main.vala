@@ -30,6 +30,13 @@ void test_padding(){
     stdout.printf("\n\n\n");
 }
 
+item_t test_item_creation(string input){
+    string[3] fields = input.split(",",3);
+    item_t itm = {fields[0],fields[1],int.parse(fields[2])};
+    stdout.printf("Name: [%s] | Desc: [%s] | Price: [%d]",fields[0],fields[1],int.parse(fields[2]));
+    return itm;
+}
+
 
 
 //Print out whole file
@@ -66,6 +73,8 @@ int main(string[] args) {
     //test_find_last_item_id(myDb,3);
     //test_stringbuilder();
     //test_padding();
+
+    item_t itm = test_item_creation("IOR,This is a desc,20");
 
     //get console input for now
     while(true){
