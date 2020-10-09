@@ -38,9 +38,8 @@ void print_all(Database *db)
     stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_record_id);
     for(int i = 1; i <= db->last_record_id; i++)
     {
-        stdout.printf("\t[%s]\n",db->read_record(i,1));
-        if (i == 1){
-            stdout.printf("\t[%s]\n",db->read_record(i,2));
+        for (int j = 1; j <= db->find_last_item_id(i); j++){
+            stdout.printf("\t[%s]\n",db->read_record(i,j));
         }
     }
     stdout.printf("------------------------------\033[0m\n");
