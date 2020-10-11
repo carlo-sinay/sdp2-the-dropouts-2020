@@ -58,21 +58,21 @@ public class Database : GLib.Object
     //Call to show Position of File Pointer in terminal
     private void debug_show_fp(){
         long fp = m_log_file.tell();
-<<<<<<< HEAD
+
         stdout.printf("\n\033[32m FP: [%ld]\033[0m", fp);
     }
-=======
-        stdout.printf("\n\033[31m FP: [%ld]\033[0m", fp);      
+
+        stdout.printf("\n\033[31m FP: [%ld]\033[0m", fp);
     }
 
     private void debug_msg(){
         stdout.printf("\n\033[31m Error Point Reached \033[0m");
     }
-    
+
     private void debug_msg_c(char c){
         stdout.printf("\n\033[31m Error => Got [%c] \033[0m",c);
     }
->>>>>>> master
+
 
     public int generate_report()
     {
@@ -132,11 +132,6 @@ public class Database : GLib.Object
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
-<<<<<<< HEAD
-        //stdout.printf("[%i,%i]\t",tr_id,it_id);
-        if(tr_id == 1) return;      //start of file is ID 1
-=======
->>>>>>> master
         m_log_file_tid_pos = 1;
         string? line = null, temp = null;
         string[3]? vals = {"","",""};
@@ -148,7 +143,7 @@ public class Database : GLib.Object
             vals = line.split(",",3);
             t_id = int.parse(vals[0]);
             i_id = int.parse(vals[1]);
-            
+
             if((t_id == tr_id) && (i_id == it_id)){
                 m_log_file_tid_pos = t_id;
                 m_log_file_iid_pos = i_id;
