@@ -28,9 +28,9 @@ public class Database : GLib.Object
         seek_to(m_last_transaction_id,1);
         m_log_file_tid_pos = m_last_transaction_id;
     }
-        string filename3 = "../data/export/";
-        file_check(ref filename3,1);             //check if export dir exists if not create it
-        m_next_report_id = 1;
+    string filename3 = "../data/export/";
+    file_check(ref filename3,1);             //check if export dir exists if not create it
+    m_next_report_id = 1;
     }
     private int file_check(ref string filename, int file_or_dir)
     {
@@ -58,9 +58,17 @@ public class Database : GLib.Object
     //Call to show Position of File Pointer in terminal
     private void debug_show_fp(){
         long fp = m_log_file.tell();
-        stdout.printf("\n\033[32m FP: [%ld]\033[0m", fp);      
+        stdout.printf("\n\033[31m FP: [%ld]\033[0m", fp);      
+    }
+
+    private void debug_msg(){
+        stdout.printf("\n\033[31m Error Point Reached \033[0m");
     }
     
+    private void debug_msg_c(char c){
+        stdout.printf("\n\033[31m Error => Got [%c] \033[0m",c);
+    }
+
     public int generate_report()
     {
         //generate pretty report with all records currently
@@ -119,30 +127,25 @@ public class Database : GLib.Object
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
-        //stdout.printf("[%i,%i]\t",tr_id,it_id); 
-        if(tr_id == 1) return;      //start of file is ID 1
         m_log_file_tid_pos = 1;
         string? line = null, temp = null;
         string[3]? vals = {"","",""};
         int t_id = 1, i_id = 1;
         char ch=0;
-        while((temp = m_log_file.read_line ()) != null){
+        while((temp = m_log_file.read_line()) != null){
             line = temp;
             //read till we get null string (EOF)
-            //line = temp;
             vals = line.split(",",3);
             t_id = int.parse(vals[0]);
             i_id = int.parse(vals[1]);
-            if(t_id == tr_id && i_id == it_id){
+            
+            if((t_id == tr_id) && (i_id == it_id)){
                 m_log_file_tid_pos = t_id;
                 m_log_file_iid_pos = i_id;
+                //stdout.printf("t_id: [%d] | i_id: [%d]",t_id,i_id);
+                m_log_file.seek(-31,FileSeek.CUR);
                 break;
             }
-        }
-        //we found the string, put cursor back a line
-        while(ch != '\n'){
-            m_log_file.seek(-2,FileSeek.CUR);
-            ch = (char)m_log_file.getc();
         }
     }
     

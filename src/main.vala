@@ -30,6 +30,13 @@ void test_padding(){
     stdout.printf("\n\n\n");
 }
 
+item_t test_item_creation(string input){
+    string[3] fields = input.split(",",3);
+    item_t itm = {fields[0],fields[1],int.parse(fields[2])};
+    stdout.printf("Name: [%s] | Desc: [%s] | Price: [%d]",fields[0],fields[1],int.parse(fields[2]));
+    return itm;
+}
+
 
 
 //Print out whole file
@@ -38,7 +45,7 @@ void print_all(Database *db)
     stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_record_id);
     for(int i = 1; i <= db->last_record_id; i++)
     {
-        for(int j = 1; j <= db->find_last_item_id(i); j++){
+        for (int j = 1; j <= db->find_last_item_id(i); j++){
             stdout.printf("\t[%s]\n",db->read_record(i,j));
         }
     }
@@ -66,6 +73,8 @@ int main(string[] args) {
     //test_find_last_item_id(myDb,3);
     //test_stringbuilder();
     //test_padding();
+
+    item_t itm = test_item_creation("IOR,This is a desc,20");
 
     //get console input for now
     while(true){
