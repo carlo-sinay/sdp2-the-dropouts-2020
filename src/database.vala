@@ -1,5 +1,6 @@
 public class Database : GLib.Object
 {
+    //Variables
     private FileStream m_log_file;
     private FileStream m_report;
     private string column_titles = "Item,Quantity,Price\n";
@@ -10,6 +11,10 @@ public class Database : GLib.Object
     private int m_last_transaction_id;           /* Keep track of the last transaction ID added. Will only get incremented by add_record */
     private int m_last_item_id;                  /* Keep track of the last id (in the last trans) ID added. Will only get incremented by add_record */
     private int m_next_report_id;                /* keep track of current report to make */
+
+    private List<Item> items;
+
+    //Constructor
     public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
          //for now we assume there's no existing file, if there is we delete and start from scratch
@@ -30,8 +35,15 @@ public class Database : GLib.Object
     }
     string filename3 = "../data/export/";
     file_check(ref filename3,1);             //check if export dir exists if not create it
+
+    items = new List<Item>();
+    make_item_list();
+
     m_next_report_id = 1;
     }
+
+
+    //Functions
     private int file_check(ref string filename, int file_or_dir)
     {
             //checks if file (or directory exists) and then creates it if it doesn't (creates dir with parents if dir)
@@ -145,6 +157,7 @@ public class Database : GLib.Object
                 m_log_file_tid_pos = t_id;
                 m_log_file_iid_pos = i_id;
                 //stdout.printf("t_id: [%d] | i_id: [%d]",t_id,i_id);
+                //Move File Pointer Back to start of line
                 m_log_file.seek(-31,FileSeek.CUR);
                 break;
             }
@@ -274,7 +287,7 @@ public class Database : GLib.Object
         //Seek To Target Transaction
         seek_to(t_id,itm_id);
         //Break Points Inserted (Optimise later)
-        while (true){
+        do{
             //Clear Fields
             fields = {"","",""};
             line = m_log_file.read_line();
@@ -286,7 +299,7 @@ public class Database : GLib.Object
             if (t_id != tr_id){break;}
             //If we are, assign itm_id
             itm_id = int.parse(fields[1]);
-        }
+        }while(!m_log_file.eof());
         //m_log_file.rewind();
         return itm_id;
     }
@@ -343,25 +356,86 @@ public class Database : GLib.Object
         //       Important for editing the last records of the file only
     }
 
-    public void delete_record(int record_id) {
+    public void delete_record(int transaction_id) { //Must be changed
+
+        seek_to(transaction_id,1);
+        int itm_id = 1;
+        int t_id = transaction_id;
+        string dump = "";
+        string line;
+        string[3] fields = null;
+
+        do{
+            line = m_log_file.read_line()+"\n";
+
+            fields = {"","",""};
+            //EOF Check
+            if (line == null) {break;}
+            fields = line.split(",",3);
+            t_id = int.parse(fields[0]);
+            //Check we're still in the same transaction
+            if (t_id != transaction_id){break;}
+            //If we are, assign itm_id
+            itm_id = int.parse(fields[1]);
+            stdout.printf("Item ID: %d\n", itm_id);
+            if(t_id < itm_id) {dump += line;}
+            stdout.printf("DUMP LINE: %s\n", dump);
+            stdout.printf("DUMP LENGTH: %d\n", dump.length);
+            whitespace_padding(dump.length);
+
+        }while(!m_log_file.eof());
+
+        stdout.printf("LAST ITEM ID TEST: %d\n", find_last_item_id(transaction_id));
+
+        //Read every line of file and add to 'dump' until next transaction ID
+        //Take size of dump and call whitespace_padding(dump.size())
+
+        do{
+            line = m_log_file.read_line();
+            //stdout.printf("%s\n", line);
+        }while(!m_log_file.eof());
 
         //Declare remove record string to delete the old information in the record
-        string remove_rec = record_id.to_string() + "," + "Deleted Record" + "\n";
+        string remove_rec = "00" + transaction_id.to_string() + ",001," + "[DELETED]" + "\n";
         //if statement checks if its reached the last record or not
-        if(record_id < m_last_transaction_id){
+        if(transaction_id < m_last_transaction_id){
             //Seeks file pointer to after the target ID
-            seek_to(record_id+1,1);
+            seek_to(transaction_id+1,1);
             //appends the records after the updated record info
             do{
                 remove_rec += m_log_file.read_line()+"\n";
             } while(!m_log_file.eof());
         }
         //move the file pointer back to the desired target ID
-        seek_to(record_id,1);
+        seek_to(transaction_id,1);
         //replaces the record with remove_rec, effectively deleting the record
         m_log_file.puts(remove_rec);
         stdout.printf("Deleted record!\n");
     }
+
+    public string whitespace_padding(int size){
+        string padding = null;
+        for(int i = 0; i < size; i++){
+            padding+=" ";
+        }
+        return padding;
+    }
+
+    //x lines + 12 - into another string
+
+    /*Delete Transaction:
+    Needs to take in both transaction_id and item_id
+    needs to keep the trailing zeros as there's a format for the record
+    Will have to check for trailing zeros  by checking if the int at the location is 0 or higher than 0
+    if its 0 - check the next number; else thats the ID; if 2nd num is zero; then the last number will be between 1-9; else its the ID.
+    Do for both transaction deletion and ID deletion
+    Example for deleting entire transaction:
+    E.g.:   001,[DELETED] (commits the rest of transaction_id 001)
+    Example for deleting an item within the transaction:
+    001,069,ITM,99,2130,2020-10-03
+    001,098,[DELETED]
+    001,420,ITM,10,2143,2020-10-03
+    */
 
     //deletes the .csv report in the data/export directory.
     /*User specifies which report is to be deleted in console (currently testing)
@@ -375,6 +449,32 @@ public class Database : GLib.Object
         } catch(Error err){
             stdout.printf("Error: %s\n", err.message);
         }
+    }
+
+    private void make_item_list(){
+        string filename = "../data/itemList";
+        file_check(ref filename, 0);
+        FileStream file = FileStream.open(filename,"r");
+        if(file == null) stdout.printf("File not opened properly\n");
+
+        string? line = null, temp = null;
+        string[4] fields;
+
+        while ((line = file.read_line())!=null){
+            temp = line;
+            fields = line.split(",",4);
+            Item itm = new Item(int.parse(fields[0]), fields[1],fields[2],int.parse(fields[3]));
+
+            items.append(itm);
+        }
+    }
+
+    public Item get_item(int index){
+        return items.nth_data(index);
+    }
+
+    public int get_list_length(){
+        return (int)items.length();
     }
 
     /* getters and setters */
