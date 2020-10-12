@@ -30,14 +30,11 @@ void test_padding(){
     stdout.printf("\n\n\n");
 }
 
-item_t test_item_creation(string input){
-    string[3] fields = input.split(",",3);
-    item_t itm = {fields[0],fields[1],int.parse(fields[2])};
-    stdout.printf("Name: [%s] | Desc: [%s] | Price: [%d]",fields[0],fields[1],int.parse(fields[2]));
-    return itm;
+void test_lists(Database *db){
+    Item itm = db->get_item(2);
+
+    stdout.printf("name: [%s]",itm.getName());
 }
-
-
 
 //Print out whole file
 void print_all(Database *db)
@@ -55,9 +52,13 @@ void print_all(Database *db)
 void list_all_items(Database* db)
 {
     stdout.printf("\n\033[32m---------ITEMS----------\n");
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < db->get_list_length(); i++)
     {
-        stdout.printf("Item no. [%i]: NAME: %s DESCRIPTION: %s COST: %i\n",i,item_list[i].name,item_list[i].description,item_list[i].price);
+        stdout.printf("Item no. [%d]: NAME: %s DESCRIPTION: %s COST: %d\n",
+        db->get_item(i).getCode(),
+        db->get_item(i).getName(),
+        db->get_item(i).getDesc(),
+        db->get_item(i).getPrice());
     }
     stdout.printf("------------------------\033[0m\n");
 }
@@ -66,16 +67,6 @@ void list_all_items(Database* db)
 int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
-    //Put test Functions between the test padding
-    //test_padding();
-    //test_find_last_item_id(myDb,1);
-    //test_find_last_item_id(myDb,2);
-    //test_find_last_item_id(myDb,3);
-    //test_stringbuilder();
-    //test_padding();
-
-    item_t itm = test_item_creation("IOR,This is a desc,20");
-
     //get console input for now
     while(true){
         print_all(myDb);
@@ -86,8 +77,8 @@ int main(string[] args) {
                         e - edit record\n
                         g - generate report\n
                         i - list items\n
-                        d - delete record (testing)\n
-                        z - delete report (Testing)\n
+                        d - delete record\n
+                        z - delete report\n
                         q - exit\n
                       ");
         stdout.printf("Option: ");
@@ -108,7 +99,7 @@ int main(string[] args) {
                 myDb.add_record(ref rec);
 
                 break;
-           case 'r':   //read record
+            case 'r':   //read record
                 stdout.printf("Which transaction?\n");
                 string which_rec = stdin.read_line();
                 int id = int.parse(which_rec);
