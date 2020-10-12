@@ -58,10 +58,6 @@ public class Database : GLib.Object
     //Call to show Position of File Pointer in terminal
     private void debug_show_fp(){
         long fp = m_log_file.tell();
-
-        stdout.printf("\n\033[32m FP: [%ld]\033[0m", fp);
-    }
-
         stdout.printf("\n\033[31m FP: [%ld]\033[0m", fp);
     }
 
@@ -72,6 +68,7 @@ public class Database : GLib.Object
     private void debug_msg_c(char c){
         stdout.printf("\n\033[31m Error => Got [%c] \033[0m",c);
     }
+
 
 
     public int generate_report()
@@ -250,9 +247,9 @@ public class Database : GLib.Object
 
 
       m_log_file.seek(0,FileSeek.END);
-      string data = m_last_record_id.to_string() + "," + date + "," + data_add;
+      string data = m_last_transaction_id.to_string() + "," + date + "," + data_add;
       m_log_file.puts(data);
-      seek_to(m_last_record_id);
+      seek_to(m_last_transaction_id);
       stdout.printf("Adding item to the same transaction item id!\n");
       m_log_file.flush();
 
