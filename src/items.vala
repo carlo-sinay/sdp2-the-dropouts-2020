@@ -1,16 +1,6 @@
 //Class for items. All items will be in an List (of this Class) so
 //their index will be their item ID
 
-<<<<<<< HEAD
-const item_t item_list[2] = {
-    {
-        "Item1", "Item 1 description", 199
-    },
-    {
-        "Item2", "Item 2 description", 299
-    },
-};
-=======
 public class Item : GLib.Object{
     private int code;
     private string name;
@@ -40,4 +30,3 @@ public class Item : GLib.Object{
         return this.price;
     }
 }
->>>>>>> master
