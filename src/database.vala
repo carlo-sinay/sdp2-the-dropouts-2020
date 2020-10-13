@@ -262,13 +262,14 @@ public class Database : GLib.Object
         //       Important for editing the last records of the file only
     }
 
-    public void delete_record(int transaction_id) { //Must be changed
+    public void delete_transaction(int transaction_id, int item_id) {
 
         seek_to(transaction_id,1);
         int itm_id = 1;
         int t_id = transaction_id;
         string dump = "";
         string line;
+        string whitespace = null;
         string[3] fields = null;
 
         do{
@@ -287,22 +288,12 @@ public class Database : GLib.Object
             if(t_id < itm_id) {dump += line;}
             stdout.printf("DUMP LINE: %s\n", dump);
             stdout.printf("DUMP LENGTH: %d\n", dump.length);
-            whitespace_padding(dump.length);
-
-        }while(!m_log_file.eof());
-
-        stdout.printf("LAST ITEM ID TEST: %d\n", find_last_item_id(transaction_id));
-
-        //Read every line of file and add to 'dump' until next transaction ID
-        //Take size of dump and call whitespace_padding(dump.size())
-
-        do{
-            line = m_log_file.read_line();
-            //stdout.printf("%s\n", line);
+            whitespace = whitespace_padding(dump.length);
+            
         }while(!m_log_file.eof());
 
         //Declare remove record string to delete the old information in the record
-        string remove_rec = "00" + transaction_id.to_string() + ",001," + "[DELETED]" + "\n";
+        string remove_rec = "00" + transaction_id.to_string() + ",00" + item_id.to_string() + ",[DELETED]" + "\n";
         //if statement checks if its reached the last record or not
         if(transaction_id < m_last_transaction_id){
             //Seeks file pointer to after the target ID
@@ -316,13 +307,18 @@ public class Database : GLib.Object
         seek_to(transaction_id,1);
         //replaces the record with remove_rec, effectively deleting the record
         m_log_file.puts(remove_rec);
+        //m_log_file.puts(whitespace);
         stdout.printf("Deleted record!\n");
+    }
+
+    public void delete_item(int transaction, int item_id){
+        stdout.printf("Deleting Item... (PENDING) %i\n", item_id);
     }
 
     public string whitespace_padding(int size){
         string padding = null;
         for(int i = 0; i < size; i++){
-            padding+=" ";
+            padding+="0";
         }
         return padding;
     }
