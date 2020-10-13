@@ -110,8 +110,12 @@ int main(string[] args) {
                 break;
             case 'e': //edit record
                 stdout.printf("Which record? (By ID)\n");
-                string which_rec = stdin.read_line();
-                int id = int.parse(which_rec);
+                string which_transaction = stdin.read_line();;
+                while (!myDb.check_id_input(ref which_transaction)) {
+                    stdout.printf("Error! Invalid input");
+                    which_transaction = stdin.read_line();
+                }
+                int id = int.parse(which_transaction);
 
                 stdout.printf("New Item type: \n");
                 string item_type = stdin.read_line();
@@ -124,7 +128,7 @@ int main(string[] args) {
 
                 string rec = item_type+","+quantity+","+price;
 
-                myDb.edit_record(id, ref rec);
+                myDb.edit_transaction(id, ref rec);
                 break;
             case 'd':   //delete record
                 stdout.printf("Which record?\n");
