@@ -14,6 +14,15 @@ public class Database : GLib.Object
 
     private List<Item> items;
 
+    public enum record_fields {
+        TRANSACTION_ID,             //field 0 - transaction ID
+        ITEM_ID,                    //field 1 - item ID
+        ITEM_CODE,                  //field 2 - item code
+        QUANTITY,                   //field 3 - quantity
+        PRICE,                      //field 4 - price (redundant but keep anyway)
+        DATE                        //field 5 - date in ISO8601, hyphen separated
+    }
+
     //Constructor
     public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
@@ -176,7 +185,7 @@ public class Database : GLib.Object
         m_log_file.flush();
     }
 
-    public string? read_record(int record_id, int item_id)
+    public string read_record(int record_id, int item_id)
     {
         //return record at line
         seek_to(record_id,item_id);
@@ -384,7 +393,7 @@ public class Database : GLib.Object
     }
 
     /* getters and setters */
-    public int last_record_id {
+    public int last_transaction_id {
         get { return m_last_transaction_id; }
     }
 }
