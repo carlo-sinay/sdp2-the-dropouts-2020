@@ -134,6 +134,21 @@ public class Database : GLib.Object
         int id = int.parse(fields[0]);
         return id;
     }
+
+    public bool check_id_input(ref string line){
+        //Ensures id doesn't exceed 999 or is null
+        return (line.length > 3)||(line == "") ? false : true;
+    }
+
+    public bool check_qty_input(ref string line){
+        //Ensures qty doesn't exceed 99
+        return (line.length > 2||(line == "")) ? false : true;
+    }
+
+    public bool check_price_input (ref string line) {
+        //Ensures price doesn't exceed 9999
+        return (line.length > 4)||(line == "") ? false : true;
+    }
     
     public void seek_to(int tr_id, int it_id)
     {
@@ -242,7 +257,30 @@ public class Database : GLib.Object
         return id;
     }
 
-    public void edit_record(int record_id,ref string new_record)
+    public void edit_item(int tr_id, int itm_id, ref string new_itm)
+    {
+        //Prepare updated item
+        string update = tr_id.to_string() + "," + itm_id.to_string() + ",";
+        update += new_itm + "\n";
+
+        //move FP to item AFTER target item
+        seek_to(tr_id,itm_id+1);
+
+        //Append all information after target edit to string
+        do {
+            update += m_log_file.read_line()+"\n";
+        } while (!m_log_file.eof());
+
+        //move FP back to START OF target item
+        seek_to(tr_id,itm_id);
+
+        //Update item
+        m_log_file.puts(update);
+        stdout.printf("Transaction Item Updated!\n");
+    }
+
+    //TO DO: Needs to return transaction target
+    public void edit_transaction(int record_id,ref string new_record)
     {
         //Prepare updated record
         string updated_rec = record_id.to_string() + "," + new_record + "\n";
