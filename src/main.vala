@@ -135,7 +135,7 @@ int main(string[] args) {
                     int tr_id = int.parse(tr_select);
                     int item_id = tr_id;
                     stdout.printf("Deleted Transaction: %i\n", tr_id);
-                    myDb.delete_record(tr_id, item_id);
+                    myDb.delete_transaction(tr_id, item_id);
                 }
                 else if(decision == "item".down()){
                     stdout.printf("Enter Transaction ID: \n");
@@ -144,7 +144,7 @@ int main(string[] args) {
                     stdout.printf("Enter Item ID: \n");
                     string item_select = stdin.read_line();
                     int item_id = int.parse(item_select);
-                    myDb.delete_record(tr_id, item_id);
+                    myDb.delete_item(tr_id, item_id);
                 }
                 break;
             case 'q':   //exit
