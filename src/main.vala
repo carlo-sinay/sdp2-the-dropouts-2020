@@ -77,7 +77,7 @@ int main(string[] args) {
                         e - edit record\n
                         g - generate report\n
                         i - list items\n
-                        d - delete record\n
+                        d - delete Transaction or Item\n
                         z - delete report\n
                         q - exit\n
                       ");
@@ -126,12 +126,26 @@ int main(string[] args) {
 
                 myDb.edit_record(id, ref rec);
                 break;
-            case 'd':   //delete record
-                stdout.printf("Which record?\n");
-                string which_rec = stdin.read_line();
-                int id = int.parse(which_rec);
-                stdout.printf("Deleting %i\n", id);
-                myDb.delete_record(id);
+            case 'd':   //delete Transaction/Item
+                stdout.printf("Would you like to Delete Transaction or Item?");
+                string decision = stdin.read_line().down();
+                if(decision == "transaction".down()){
+                    stdout.printf("Enter transaction ID to delete: \n");
+                    string tr_select = stdin.read_line();
+                    int tr_id = int.parse(tr_select);
+                    int item_id = tr_id;
+                    stdout.printf("Deleted Transaction: %i\n", tr_id);
+                    myDb.delete_record(tr_id, item_id);
+                }
+                else if(decision == "item".down()){
+                    stdout.printf("Enter Transaction ID: \n");
+                    string tr_select = stdin.read_line();
+                    int tr_id = int.parse(tr_select);
+                    stdout.printf("Enter Item ID: \n");
+                    string item_select = stdin.read_line();
+                    int item_id = int.parse(item_select);
+                    myDb.delete_record(tr_id, item_id);
+                }
                 break;
             case 'q':   //exit
                 return 0;
