@@ -311,8 +311,26 @@ public class Database : GLib.Object
         stdout.printf("Deleted record!\n");
     }
 
-    public void delete_item(int transaction, int item_id){
-        stdout.printf("Deleting Item... (PENDING) %i\n", item_id);
+    //deletes an item within a transaction
+    public void delete_item(int transaction_id, int item_id){
+        
+        seek_to(transaction_id,1);
+        string line;
+        string zeros = "0000000000000000000000";
+
+        string del_line = "00" + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        if(transaction_id < m_last_transaction_id){
+            if(item_id == m_last_item_id){
+                seek_to(transaction_id+1,1);
+                do{
+                    del_line += m_log_file.read_line()+"\n";
+                }while(!m_log_file.eof());
+            }
+        }
+        seek_to(transaction_id, item_id);
+        m_log_file.puts(del_line);
+        stdout.printf("Deleting Item %i in Transaction %i\n", item_id, transaction_id);
+
     }
 
     public string whitespace_padding(int size){
@@ -322,22 +340,6 @@ public class Database : GLib.Object
         }
         return padding;
     }
-
-    //x lines + 12 - into another string
-
-    /*Delete Transaction:
-    Needs to take in both transaction_id and item_id
-    needs to keep the trailing zeros as there's a format for the record
-    Will have to check for trailing zeros  by checking if the int at the location is 0 or higher than 0
-    if its 0 - check the next number; else thats the ID; if 2nd num is zero; then the last number will be between 1-9; else its the ID.
-    Do for both transaction deletion and ID deletion
-    Example for deleting entire transaction:
-    E.g.:   001,[DELETED] (commits the rest of transaction_id 001)
-    Example for deleting an item within the transaction:
-    001,069,ITM,99,2130,2020-10-03
-    001,098,[DELETED]
-    001,420,ITM,10,2143,2020-10-03
-    */
 
     //deletes the .csv report in the data/export directory.
     /*User specifies which report is to be deleted in console (currently testing) 
