@@ -125,7 +125,6 @@ public class AppGUI{
     }
 
 
-
     [CCode (instance_pos = -1)]
     public void on_add_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();
@@ -150,6 +149,7 @@ public class AppGUI{
         //TODO: add item to actual database and get its transaction and item IDs
         string temp = "";
         add_to_item_list(1, item_id,ref qty,ref temp,ref temp);
+        add_to_item_list(0, item_id,ref qty,ref temp,ref temp);
         log("New transaction\n");
     }
     [CCode (instance_pos = -1)]
@@ -167,7 +167,6 @@ public class AppGUI{
         edit_rec_item_id = int.parse(db_item_id);
         string str = "Row: " + path.to_string() + ". Item: " + item_name + ". tr_id: " + edit_rec_tr_id.to_string() + ", it_id: " + edit_rec_item_id.to_string();
         log(str + "\n");
-        message("row activated. ti: %i, ti2 %i",ti.stamp, ti2.stamp );
     }
  
 }

@@ -273,6 +273,22 @@
                     <property name="y">320</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="width_request">100</property>
+                    <property name="height_request">80</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="x">369</property>
+                    <property name="y">363</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="resize">True</property>
