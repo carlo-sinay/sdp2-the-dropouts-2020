@@ -75,20 +75,18 @@ public class AppGUI{
         for(; i <= db.last_transaction_id; i++)
         {
             message("getting record: %i, %i",i, j);
-            string? first = db.read_record(i,j);
-            message("got record: %s",first);
-            string[] first_vals = first.split(",");
+            string first_item_code = db.get_record_info(i,j,db.record_fields.ITEM_CODE);
+            string first_qty = db.get_record_info(i,j,db.record_fields.QUANTITY);
+            message("got record: %s",db.read_record(i,j));
             //append new transaction
-            //add_to_item_list(1,int.parse(first_vals[db.record_fields.ITEM_CODE]),ref first_vals[db.record_fields.QUANTITY]);
-            add_to_item_list(1,int.parse(first_vals[2]),ref first_vals[3]);
+            add_to_item_list(1,int.parse(first_item_code),ref first_qty);
             for(; j <= db.find_last_item_id(i); j++)
             {
                 message("ADDING tr %i item %i\n",i,j);
-                string other = db.read_record(i,j);
+                string rec_item_code = db.get_record_info(i,j,db.record_fields.ITEM_CODE);
+                string rec_qty = db.get_record_info(i,j,db.record_fields.QUANTITY);
                 //append items for transaction
-                string[] other_vals = other.split(",");
-                //add_to_item_list(0,int.parse(other_vals[db.record_fields.ITEM_CODE]),ref other_vals[db.record_fields.QUANTITY]);
-                add_to_item_list(0,int.parse(other_vals[2]),ref other_vals[3]);
+                add_to_item_list(0,int.parse(rec_item_code),ref rec_qty);
 
             }
             j = 1;

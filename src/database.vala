@@ -192,6 +192,13 @@ public class Database : GLib.Object
         return m_log_file.read_line();
     }
 
+    public string get_record_info(int tr_id, int item_id, record_fields which)
+    {
+        string info = read_record(tr_id,item_id);
+        string[] info_vals = info.split(",");
+        return info_vals[which];
+    }
+
     public int find_last_item_id(int tr_id)
     {
         int itm_id = 1;
