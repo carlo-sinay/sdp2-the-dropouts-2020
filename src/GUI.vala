@@ -168,17 +168,20 @@ public class AppGUI{
     }
     [CCode (instance_pos = -1)]
     public void on_tv_row_active(Gtk.TreeView source, Gtk.TreePath path, Gtk.TreeViewColumn column) {
-        string? item_name = "";
-        string? db_tr_id = "";
-        string? db_item_id = "";
+        string? item_name = null;
+        string? db_tr_id = null;
+        string? db_item_id = null;
 
         Gtk.TreeIter temp_iter;
         ls.get_iter(out temp_iter, path);
         ls.get(temp_iter,tree_store_fields.ITEM_NAME,&item_name,-1);
         ls.get(temp_iter,tree_store_fields.DB_TRANSACTION_ID,&db_tr_id,-1);
         ls.get(temp_iter,tree_store_fields.DB_ITEM_ID,&db_item_id,-1);
-        edit_rec_tr_id = int.parse(db_tr_id);
-        edit_rec_item_id = int.parse(db_item_id);
+        if(db_tr_id != null) edit_rec_tr_id = int.parse(db_tr_id);
+        else edit_rec_tr_id = -1;
+        if(db_item_id != null) edit_rec_item_id = int.parse(db_item_id);
+        else edit_rec_item_id = -1;
+        message("parsing id strings\n");
         string str = "Row: " + path.to_string() + ". Item: " + item_name + ". tr_id: " + edit_rec_tr_id.to_string() + ", it_id: " + edit_rec_item_id.to_string();
         log(str + "\n");
     }

@@ -48,7 +48,19 @@ def random_date(start,end):
 ###Main
 def main():
 	#Open File
-	file = open("../data/logs/generatedLog","w")
+	file = open("../data/logs/testLog","w")
+	#Open item list file
+	item_list_file = open("../data/itemList","r")
+
+	#get number of available items from item list
+	items = 0
+	while(True):
+		if(item_list_file.readline() == ""):
+			break
+		print("Found item!", items)
+		items += 1
+	item_list_file.close()
+
 
 	#Start and End Dates
 	start = datetime.date(2020,8,15)
@@ -65,7 +77,7 @@ def main():
 		#Add x number of Items to Transaction
 		items = 1
 		while (items <= item_count):
-			code = random.randint(1,50) #Up to 50 item types
+			code = random.randint(1,items) #Up to 5 item types
 			qty = random.randint(1,99) #Max Quantity of 99
 			price = random.randint(1,9999) #Max Price of 9999
 
