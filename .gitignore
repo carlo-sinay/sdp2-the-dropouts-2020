@@ -1,3 +1,6 @@
 #ignoring compiler or program generated files
 build/*
 data/*
+glade/*~
+glade/#*
+src/*.c
