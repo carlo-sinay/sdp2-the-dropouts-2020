@@ -317,8 +317,28 @@ public class Database : GLib.Object
         seek_to(transaction_id,1);
         string line;
         string zeros = "0000000000000000000000";
+        string prefixA = "00";
+        string prefixB = "0";
+        string del_line;
+        
+        //Basic Method to print leading zeros - Will Change as realised this is too long and inefficient
+        if(transaction_id <= 9){
+            del_line = prefixA + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        }else if (99 >= transaction_id >= 10 ){
+            del_line = prefixB + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        }else{
+            del_line = transaction_id.to_string() + "," + "00" + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        }
 
-        string del_line = "00" + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        if(item_id <= 9){
+            del_line = prefixA + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        }else if(99 >= item_id >= 10){
+            del_line = prefixB + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        }else{
+            del_line = prefixB + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
+        }
+
+        stdout.printf(test_prefix);
         if(transaction_id < m_last_transaction_id){
             if(item_id == m_last_item_id){
                 seek_to(transaction_id+1,1);
