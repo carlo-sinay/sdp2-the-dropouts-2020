@@ -143,6 +143,75 @@ public class Database : GLib.Object
         int id = int.parse(fields[0]);
         return id;
     }
+
+    public string zero_padding(int i, int length)
+    {
+        string output = "000";
+
+        //Check input validity
+        if ((i > 9999)||(i<1)){
+            return output; // 000 is an error code (for now)
+        }
+        
+        //Padding
+        switch (length){
+            //Pad for QTY
+            case 2: 
+                if ((i>9)&&(i<=99)){
+                    output = i.to_string();
+                }
+                if ((i>0)&&(i<=9)){
+                    output = "0" + i.to_string();
+                }
+                break;
+            //Pad for IDs
+            case 3:
+                if ((i>99)&&(i <= 999)) {
+                    output = i.to_string();
+                }
+                if ((i>9)&&(i<=99)){
+                    output = "0" + i.to_string();
+                }
+                if ((i>0)&&(i<=9)){
+                    output = "00" + i.to_string();
+                }
+                break;
+            //Pad for Price
+            case 4:
+                if ((i>999)&&(i <= 9999)) {
+                    output = i.to_string();
+                }
+                if ((i>99)&&(i<=999)){
+                    output = "0" + i.to_string();
+                }
+                if ((i>9)&(i<=99)){
+                    output = "00" + i.to_string();
+                }
+                if ((i>0)&(i<=9)){
+                    output = "000" + i.to_string();
+                }
+                break;
+            default:
+                break;
+        }
+        return output;
+    }
+
+
+    public bool check_id_input(ref string line){
+        //Ensures id doesn't exceed 999 or is null
+        return (line.length > 3)||(line == "") ? false : true;
+    }
+
+    public bool check_qty_input(ref string line){
+        //Ensures qty doesn't exceed 99
+        return (line.length > 2||(line == "")) ? false : true;
+    }
+
+    public bool check_price_input (ref string line) {
+        //Ensures price doesn't exceed 9999
+        return (line.length > 4)||(line == "") ? false : true;
+    }
     
     public void seek_to(int tr_id, int it_id)
     {
@@ -258,7 +327,30 @@ public class Database : GLib.Object
         return id;
     }
 
-    public void edit_record(int record_id,ref string new_record)
+    public void edit_item(int tr_id, int itm_id, ref string new_itm)
+    {
+        //Prepare updated item
+        string update = zero_padding(tr_id,3) + "," + zero_padding(itm_id,3) + ",";
+        update += new_itm;
+
+        //move FP to item AFTER target item
+        seek_to(tr_id,itm_id+1);
+
+        //Append all information after target edit to string
+        do {
+            update += m_log_file.read_line()+"\n";
+        } while (!m_log_file.eof());
+
+        //move FP back to START OF target item
+        seek_to(tr_id,itm_id);
+
+        //Update item
+        m_log_file.puts(update);
+        stdout.printf("Transaction Item Updated!\n");
+    }
+
+    //TO DO: Needs to return transaction target
+    public void edit_transaction(int record_id,ref string new_record)
     {
         //Prepare updated record
         string updated_rec = record_id.to_string() + "," + new_record + "\n";
