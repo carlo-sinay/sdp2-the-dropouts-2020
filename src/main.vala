@@ -161,17 +161,17 @@ int main(string[] args) {
                 myDb.edit_item(tr_id,itm_id,ref rec);
                 break;
             case 'd':   //delete Transaction/Item
-                stdout.printf("Would you like to Delete Transaction or Item?");
+                stdout.printf("Would you like to Delete Transaction (t) or Item (i)? ");
                 string decision = stdin.read_line().down();
-                if(decision == "transaction".down()){
+                if(decision == "t".down()){
                     stdout.printf("Enter transaction ID to delete: \n");
                     string tr_select = stdin.read_line();
                     int tr_id = int.parse(tr_select);
                     int item_id = tr_id;
                     stdout.printf("Deleted Transaction: %i\n", tr_id);
-                    myDb.delete_transaction(tr_id, item_id);
+                    myDb.delete_transaction(tr_id);
                 }
-                else if(decision == "item".down()){
+                else if(decision == "i".down()){
                     stdout.printf("Enter Transaction ID: \n");
                     string tr_select = stdin.read_line();
                     int tr_id = int.parse(tr_select);
