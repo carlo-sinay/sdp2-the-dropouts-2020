@@ -370,53 +370,53 @@ public class Database : GLib.Object
         //       Important for editing the last records of the file only
     }
 
-    public void delete_transaction(int transaction_id, int item_id) {
+    public void delete_transaction(int t_id) {
 
-        seek_to(transaction_id,1);
-        int itm_id = 1;
+        seek_to(t_id,1);
+        string line = m_log_file.read_line();
+        int max_items = 1;
 
-        //Declare remove record string to delete the old information in the record
-        string remove_rec = "00" + transaction_id.to_string() + ",00" + item_id.to_string() + ",[DELETED]" + "\n";
-        //if statement checks if its reached the last record or not
-        if(transaction_id < m_last_transaction_id){
-            //Seeks file pointer to after the target ID
-            seek_to(transaction_id+1,1);
-            //appends the records after the updated record info
-            do{
-                remove_rec += m_log_file.read_line()+"\n";
-            } while(!m_log_file.eof());
+        string[] id_vals = line.split(",");
+
+        while((line = m_log_file.read_line()) != null){
+            id_vals = line.split(",");
+            int new_tr = int.parse(id_vals[0]);
+            int new_item = int.parse(id_vals[1]);
+            //check for the next transaction
+            stdout.printf("max items : %i\n", max_items);
+            if(t_id != new_tr){ break; }
+            max_items = new_item;
         }
-        //move the file pointer back to the desired target ID
-        seek_to(transaction_id,1);
-        //replaces the record with remove_rec, effectively deleting the record
-        m_log_file.puts(remove_rec);
-        //m_log_file.puts(whitespace);
-        stdout.printf("Deleted record!\n");
+        for(int i=0; i < max_items; i++){
+            delete_item(t_id,i+1);
+        } 
     }
 
     //deletes an item within a transaction
-    public void delete_item(int transaction_id, int item_id){
+    public void delete_item(int t_id, int i_id){
         
-        seek_to(transaction_id,1);
+        seek_to(t_id,1);
         string zeros = "0000000000000000000000";
-        string tr_id = get_record_info(transaction_id,item_id,TRANSACTION_ID);
-        string it_id = get_record_info(transaction_id,item_id,ITEM_ID);
+        //gets ID's from the read line
+        string tr_id = get_record_info(t_id,i_id,TRANSACTION_ID);
+        string it_id = get_record_info(t_id,i_id,ITEM_ID);
 
+        //declare delete line string to replace old info in the transaction
         string del_line = tr_id + "," + it_id + "," + zeros.to_string() + "\n";
 
-        stdout.printf("%s, %s\n", tr_id, it_id);
-
-        if(transaction_id < m_last_transaction_id){
-            if(item_id == m_last_item_id){
-                seek_to(transaction_id+1,1);
+        if(t_id < m_last_transaction_id){
+            if(i_id == m_last_item_id){
+                seek_to(t_id+1,1);
                 do{
                     del_line += m_log_file.read_line()+"\n";
                 }while(!m_log_file.eof());
             }
         }
-        seek_to(transaction_id, item_id);
+        //move to desired item within the tranasction
+        seek_to(t_id, i_id);
+        //deletes item in transaction
         m_log_file.puts(del_line);
-        stdout.printf("Deleting Item %i in Transaction %i\n", item_id, transaction_id);
+        stdout.printf("Deleting Item %i in Transaction %i\n", i_id, t_id);
 
     }
 
