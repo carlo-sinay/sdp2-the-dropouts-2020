@@ -110,25 +110,55 @@ int main(string[] args) {
                 break;
             case 'e': //edit record
                 stdout.printf("Which record? (By ID)\n");
+                //Pick Transaction
                 string which_transaction = stdin.read_line();;
                 while (!myDb.check_id_input(ref which_transaction)) {
                     stdout.printf("Error! Invalid input");
                     which_transaction = stdin.read_line();
                 }
-                int id = int.parse(which_transaction);
+                int tr_id = int.parse(which_transaction);
+                //Pick Item ID in Transaction
+                string which_itm_id = stdin.read_line();;
+                while (!myDb.check_id_input(ref which_itm_id)) {
+                    stdout.printf("Error! Invalid input");
+                    which_itm_id = stdin.read_line();
+                }
+                int itm_id = int.parse(which_itm_id);
 
-                stdout.printf("New Item type: \n");
-                string item_type = stdin.read_line();
+                //Populate Edit
+                stdout.printf("New Item Code: \n");
+                string item_code = stdin.read_line();
+                //Check Item Code Validity
+                while (!myDb.check_id_input(ref item_code)) {
+                    stdout.printf("Error! Invalid input");
+                    item_code = stdin.read_line();
+                }
+                int itm_code_int = int.parse(item_code);
 
                 stdout.printf("New Quantity: \n");
                 string quantity = stdin.read_line();
+                //Check QTY Validity
+                while (!myDb.check_qty_input(ref quantity)) {
+                    stdout.printf("Error! Invalid input");
+                    quantity = stdin.read_line();
+                }
+                int qty = int.parse(quantity);
 
                 stdout.printf("New Price: \n");
                 string price = stdin.read_line();
+                while (!myDb.check_price_input(ref price)) {
+                    stdout.printf("Error! Invalid input");
+                    price = stdin.read_line();
+                }
+                int int_price = int.parse(price);
 
-                string rec = item_type+","+quantity+","+price;
+                //Populate Record to update
+                string rec = myDb.zero_padding(itm_code_int,3)+",";
+                rec += myDb.zero_padding(qty,2)+",";
+                rec += myDb.zero_padding(int_price,4) + ",";
+                rec += "2020-10-15\n"; //Dummy Date
 
-                myDb.edit_transaction(id, ref rec);
+                myDb.edit_item(tr_id,itm_id,ref rec);
                 break;
             case 'd':   //delete record
                 stdout.printf("Which record?\n");
