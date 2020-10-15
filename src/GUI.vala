@@ -14,6 +14,7 @@ public class AppGUI{
     private Gtk.TextBuffer debug_text_buf;
     private Gtk.TextIter debug_text_iter;
     private Gtk.ComboBox item_list_chooser;
+    private Gtk.Dialog edit_record_dialog;
     private Database db;
     
     enum tree_store_fields{
@@ -38,6 +39,7 @@ public class AppGUI{
         item_list_chooser = bld.get_object("itemlistchooser") as Gtk.ComboBox;
         item_list_store = bld.get_object("itemliststore") as Gtk.ListStore;
         debug_text_view = bld.get_object("debug_text_view") as Gtk.TextView;
+        edit_record_dialog = bld.get_object("edit_dialog") as Gtk.Dialog;
         debug_text_buf = debug_text_view.get_buffer();
         debug_text_buf.get_start_iter(out debug_text_iter);
         if(debug_text_buf == null) message("TEXT BUFFER NULL");
@@ -140,6 +142,18 @@ public class AppGUI{
 
         string str = "Editing tr: " + edit_rec_tr_id.to_string() + ", item: " + edit_rec_item_id.to_string();
         log(str+"\n");
+        log("Running dialog \n");
+        int res = edit_record_dialog.run();
+        log("response id: " + res.to_string() + "\n");
+        //edit_record_dialog.destroy();
+    }
+    [CCode (instance_pos = -1)]
+    public void on_diag_done_click (Gtk.Button source) {
+       log("Diag done!\n");
+    }
+ 
+    public void on_diag_cancel_click (Gtk.Button source) {
+        //edit_record_dialog.destroy();
     }
 
     [CCode (instance_pos = -1)]
