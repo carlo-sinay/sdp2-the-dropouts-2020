@@ -33,6 +33,11 @@ public class Database : GLib.Object
         seek_to(m_last_transaction_id,1);
         m_log_file_tid_pos = m_last_transaction_id;
     }
+    if(m_last_item_id > 0)
+    {
+      seek_to(m_last_item_id,1);
+      m_log_file_tid_pos = m_last_item_id;
+    }
     string filename3 = "../data/export/";
     file_check(ref filename3,1);             //check if export dir exists if not create it
 
@@ -210,10 +215,33 @@ public class Database : GLib.Object
         stdout.printf("writing %i bytes\n",rec_to_add.length);
         m_log_file.seek(0,FileSeek.END);
         m_last_transaction_id++;
+        m_last_item_id++;
+        var final_m_last_transaction_id = "";
+        var final_m_last_item_id = "";
+
+        if (m_last_transaction_id < 10)
+        {
+          final_m_last_transaction_id = "00" + m_last_transaction_id.to_string();
+        }
+        else
+        {
+          final_m_last_transaction_id = "0" + m_last_transaction_id.to_string();
+        }
+
+        if (m_last_item_id < 10)
+        {
+          final_m_last_item_id = "00" + m_last_item_id.to_string();
+        }
+        else
+        {
+          final_m_last_item_id = "0" + m_last_item_id.to_string();
+        }
+
         //m_log_file_tid_pos = m_last_transaction_id;
-        string record = m_last_transaction_id.to_string() + "," + date + "," + rec_to_add;
+        string record = final_m_last_transaction_id + "," + final_m_last_item_id + "," + rec_to_add  + "," + date +  "\n";
         m_log_file.puts(record);
         seek_to(m_last_transaction_id,1);
+        seek_to(m_last_item_id,1);
         stdout.printf("Adding record!\n");
         m_log_file.flush();
     }
@@ -258,24 +286,49 @@ public class Database : GLib.Object
 
       string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
+      m_last_item_id++;
 
+      var final_m_last_transaction_id = "";
+      var final_m_last_item_id = "";
+
+      if (m_last_transaction_id < 10)
+      {
+        final_m_last_transaction_id = "00" + m_last_transaction_id.to_string();
+      }
+      else
+      {
+        final_m_last_transaction_id = "0" + m_last_transaction_id.to_string();
+      }
+
+      if (m_last_item_id < 10)
+      {
+        final_m_last_item_id = "00" + m_last_item_id.to_string();
+      }
+      else
+      {
+        final_m_last_item_id = "0" + m_last_item_id.to_string();
+      }
+
+      
       m_log_file.seek(0,FileSeek.END);
-      string data = m_last_transaction_id.to_string() + "," + date + "," + data_add;
+      string data = final_m_last_transaction_id + "," + final_m_last_item_id + "," + data_add + "," + date + "\n";
       m_log_file.puts(data);
-      seek_to(m_last_transaction_id);
+      seek_to(m_last_transaction_id,1);
+      seek_to(m_last_item_id,1);
       stdout.printf("Adding item to the same transaction item id!\n");
       m_log_file.flush();
 
     }
 
 
-    public string? read_record(int record_id)
+    public string? read_record(int record_id, int item_id)
     {
         //return record at line
         seek_to(record_id,item_id);
         return m_log_file.read_line();
 
     }
+
 
     public int find_last_item_id(int tr_id)
     {

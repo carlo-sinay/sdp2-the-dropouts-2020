@@ -96,7 +96,7 @@ int main(string[] args) {
 
 
 
-                string rec = item_type+","+quantity+","+price + "\n";
+                string rec = item_type+","+quantity+","+price ;
 
                 myDb.add_record(ref rec);
 
@@ -113,7 +113,7 @@ int main(string[] args) {
                   stdout.printf("Price: \n");
                   string price2 = stdin.read_line();
 
-                  string data = item_type2+","+quantity2+","+price2 + "\n";
+                  string data = item_type2+","+quantity2+","+price2 ;
 
                   myDb.add_items(ref data);
                 }
