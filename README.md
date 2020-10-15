@@ -14,3 +14,4 @@ Team:
 * data - all database files (to be added later)
     * logs - internal log file the program uses
 	* export - all exported data like reports
+* refs - contains sample data to be copied into data/
