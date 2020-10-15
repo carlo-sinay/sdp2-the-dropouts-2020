@@ -374,31 +374,6 @@ public class Database : GLib.Object
 
         seek_to(transaction_id,1);
         int itm_id = 1;
-        int t_id = transaction_id;
-        string dump = "";
-        string line;
-        string whitespace = null;
-        string[3] fields = null;
-
-        do{
-            line = m_log_file.read_line()+"\n";
-
-            fields = {"","",""};
-            //EOF Check
-            if (line == null) {break;}
-            fields = line.split(",",3);
-            t_id = int.parse(fields[0]);
-            //Check we're still in the same transaction
-            if (t_id != transaction_id){break;}
-            //If we are, assign itm_id            
-            itm_id = int.parse(fields[1]);
-            stdout.printf("Item ID: %d\n", itm_id);
-            if(t_id < itm_id) {dump += line;}
-            stdout.printf("DUMP LINE: %s\n", dump);
-            stdout.printf("DUMP LENGTH: %d\n", dump.length);
-            whitespace = whitespace_padding(dump.length);
-            
-        }while(!m_log_file.eof());
 
         //Declare remove record string to delete the old information in the record
         string remove_rec = "00" + transaction_id.to_string() + ",00" + item_id.to_string() + ",[DELETED]" + "\n";
@@ -423,30 +398,14 @@ public class Database : GLib.Object
     public void delete_item(int transaction_id, int item_id){
         
         seek_to(transaction_id,1);
-        string line;
         string zeros = "0000000000000000000000";
-        string prefixA = "00";
-        string prefixB = "0";
-        string del_line;
-        
-        //Basic Method to print leading zeros - Will Change as realised this is too long and inefficient
-        if(transaction_id <= 9){
-            del_line = prefixA + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
-        }else if (99 >= transaction_id >= 10 ){
-            del_line = prefixB + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
-        }else{
-            del_line = transaction_id.to_string() + "," + "00" + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
-        }
+        string tr_id = get_record_info(transaction_id,item_id,TRANSACTION_ID);
+        string it_id = get_record_info(transaction_id,item_id,ITEM_ID);
 
-        if(item_id <= 9){
-            del_line = prefixA + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
-        }else if(99 >= item_id >= 10){
-            del_line = prefixB + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
-        }else{
-            del_line = prefixB + transaction_id.to_string() + "," + "00" + item_id.to_string() + "," + zeros.to_string() + "\n";
-        }
+        string del_line = tr_id + "," + it_id + "," + zeros.to_string() + "\n";
 
-        stdout.printf(test_prefix);
+        stdout.printf("%s, %s\n", tr_id, it_id);
+
         if(transaction_id < m_last_transaction_id){
             if(item_id == m_last_item_id){
                 seek_to(transaction_id+1,1);
@@ -459,14 +418,6 @@ public class Database : GLib.Object
         m_log_file.puts(del_line);
         stdout.printf("Deleting Item %i in Transaction %i\n", item_id, transaction_id);
 
-    }
-
-    public string whitespace_padding(int size){
-        string padding = null;
-        for(int i = 0; i < size; i++){
-            padding+="0";
-        }
-        return padding;
     }
 
     //deletes the .csv report in the data/export directory.
