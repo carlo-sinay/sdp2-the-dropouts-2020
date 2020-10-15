@@ -39,8 +39,8 @@ void test_lists(Database *db){
 //Print out whole file
 void print_all(Database *db)
 {
-    stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_record_id);
-    for(int i = 1; i <= db->last_record_id; i++)
+    stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_transaction_id);
+    for(int i = 1; i <= db->last_transaction_id; i++)
     {
         for (int j = 1; j <= db->find_last_item_id(i); j++){
             stdout.printf("\t[%s]\n",db->read_record(i,j));
