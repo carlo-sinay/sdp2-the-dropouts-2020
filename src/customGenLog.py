@@ -82,7 +82,7 @@ def main():
 	#Define Max Item Count
 	while ((usr_in < 1) or (usr_in > 99)):
 		try:
-			usr_in = int(input("\nMax number of transactions? (1 - 99)\n>"))
+			usr_in = int(input("\nMax number of items? (1 - 99)\n>"))
 		except:
 			print("Invalid Input!")
 	i_max = usr_in
