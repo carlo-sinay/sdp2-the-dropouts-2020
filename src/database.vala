@@ -327,11 +327,39 @@ public class Database : GLib.Object
         return id;
     }
 
-    public void edit_item(int tr_id, int itm_id, ref string new_itm)
+    public void edit_item(int tr_id, int itm_id, ref string edit, record_fields which)
     {
         //Prepare updated item
-        string update = zero_padding(tr_id,3) + "," + zero_padding(itm_id,3) + ",";
-        update += new_itm;
+        string update= zero_padding(tr_id,3) + "," + zero_padding(itm_id,3) + ",";
+        //Inject Item Code to updated String
+        if (which == ITEM_CODE){
+            update += edit + ",";
+            update += get_record_info(tr_id, itm_id, QUANTITY) + ",";
+            update += get_record_info(tr_id, itm_id, PRICE) + ",";
+            update += get_record_info(tr_id, itm_id, DATE);
+        }
+        //Inject Quantity to updated String
+        if (which == QUANTITY){
+            update += get_record_info(tr_id, itm_id, ITEM_CODE) + ",";
+            update += edit + ",";
+            update += get_record_info(tr_id, itm_id, PRICE) + ",";
+            update += get_record_info(tr_id, itm_id, DATE);
+        }
+        //Inject Price to updated String
+        if (which == PRICE){
+            update += get_record_info(tr_id, itm_id, ITEM_CODE) + ",";
+            update += get_record_info(tr_id, itm_id, QUANTITY) + ",";
+            update += edit + ",";
+            update += get_record_info(tr_id, itm_id, DATE);
+        }
+        //Inject Date to updated String
+        if (which == DATE){
+            update += get_record_info(tr_id, itm_id, ITEM_CODE) + ",";
+            update += get_record_info(tr_id, itm_id, QUANTITY) + ",";
+            update += get_record_info(tr_id, itm_id, PRICE) + ",";
+            update += edit;
+        }
+        update += "\n";
 
         //move FP to item AFTER target item
         seek_to(tr_id,itm_id+1);
@@ -347,27 +375,6 @@ public class Database : GLib.Object
         //Update item
         m_log_file.puts(update);
         stdout.printf("Transaction Item Updated!\n");
-    }
-
-    //TO DO: Needs to return transaction target
-    public void edit_transaction(int record_id,ref string new_record)
-    {
-        //Prepare updated record
-        string updated_rec = record_id.to_string() + "," + new_record + "\n";
-        //Move FP to records after target_record
-        seek_to(record_id+1,1);
-        //Append records after updated record information
-        do {
-            updated_rec += m_log_file.read_line()+"\n";
-        } while (!m_log_file.eof());
-        //Move FP back to desired insertion point (start of target record)
-        seek_to(record_id,1);
-        //Update Record
-        m_log_file.puts(updated_rec);
-        stdout.printf("Record Updated!\n");
-        
-        //TO DO: Add cleanup method to remove excess characters
-        //       Important for editing the last records of the file only
     }
 
     public void delete_transaction(int t_id) {
