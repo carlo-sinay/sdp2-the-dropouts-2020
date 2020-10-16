@@ -4,7 +4,8 @@ public class AppGUI{
     private int edit_rec_tr_id;
     private int edit_rec_item_id;
     public Gtk.Label test_label;
-    private Gtk.Entry test_entry;
+    private Gtk.Entry qty_entry;
+    private Gtk.Entry dlg_qty_entry;
     private Gtk.Builder m_bldr;
     private Gtk.ListStore item_list_store;
     private Gtk.TreeStore ls;
@@ -15,7 +16,9 @@ public class AppGUI{
     private Gtk.TextBuffer debug_text_buf;
     private Gtk.TextIter debug_text_iter;
     private Gtk.ComboBox item_list_chooser;
+    private Gtk.ComboBox dlg_item_list_chooser;
     private Gtk.Dialog edit_record_dialog;
+    private Gtk.TreePath selected_row_path;         //we keep track of IDs to edit, this is so we can write it back to the gui treestore
     private Database db;
     
     enum tree_store_fields{
@@ -37,8 +40,10 @@ public class AppGUI{
         edit_rec_tr_id = -1;
         test_label = bld.get_object("testLabel") as Gtk.Label;
         ls = bld.get_object("mytreestore") as Gtk.TreeStore;
-        test_entry = bld.get_object("qty_entry") as Gtk.Entry;
+        qty_entry = bld.get_object("qty_entry") as Gtk.Entry;
+        dlg_qty_entry = bld.get_object("dlg_qty_entry") as Gtk.Entry;
         item_list_chooser = bld.get_object("itemlistchooser") as Gtk.ComboBox;
+        dlg_item_list_chooser = bld.get_object("dlg_itemlistchooser") as Gtk.ComboBox;
         item_list_store = bld.get_object("itemliststore") as Gtk.ListStore;
         debug_text_view = bld.get_object("debug_text_view") as Gtk.TextView;
         edit_record_dialog = bld.get_object("edit_dialog") as Gtk.Dialog;
@@ -76,6 +81,29 @@ public class AppGUI{
         string price_str = "$"+item_price_d.to_string();
 //        price_str = db.get_item(item_code).getPrice().to_string();
         return price_str;
+    }
+
+    //fetches the right info for the given row (record) and updates the tree view
+    private void update_tree_store_row(Gtk.TreePath path_to_change){
+        Gtk.TreeIter temp;
+        //get tran id and item id for that row
+        string? db_tr_id = null;
+        string? db_item_id = null;
+ 
+        ls.get_iter(out temp, path_to_change);
+        ls.get(temp,tree_store_fields.DB_TRANSACTION_ID,&db_tr_id,-1);
+        ls.get(temp,tree_store_fields.DB_ITEM_ID,&db_item_id,-1);
+
+        //get the item code
+        string db_item_code = db.get_record_info(int.parse(db_tr_id),int.parse(db_item_id),db.record_fields.ITEM_CODE);
+        string qty = db.get_record_info(int.parse(db_tr_id),int.parse(db_item_id),db.record_fields.QUANTITY);
+
+        ls.set(temp, tree_store_fields.TRANSACTION_ID,"",
+                    tree_store_fields.ITEM_NAME, db.get_item(int.parse(db_item_code)).getName(),
+                    tree_store_fields.QUANTITY, qty,
+                    tree_store_fields.PRICE, format_price_string(int.parse(db_item_code),qty),
+                    -1);
+        message("Changed tr %i item %i",edit_rec_tr_id, edit_rec_item_id);
     }
 
     private void add_to_item_list(int which, int item_code, ref string qty, ref string db_tr_id, ref string db_it_id){
@@ -133,7 +161,7 @@ public class AppGUI{
     [CCode (instance_pos = -1)]
     public void on_add_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();
-        string qty = test_entry.get_text();
+        string qty = qty_entry.get_text();
         //TODO: add item to actual database and get its transaction and item IDs
         string temp = "";
         add_to_item_list(0, item_id,ref qty,ref temp,ref temp);
@@ -150,26 +178,51 @@ public class AppGUI{
         log("response id: " + res.to_string() + "\n");
         edit_record_dialog.hide();
     }
-    /*
     [CCode (instance_pos = -1)]
-    public void on_diag_done_click (Gtk.Button source) {
-       log("Diag done!\n");
+    public void dlg_done_click (Gtk.Button source) {
+        //edit_rec_tr_id/edit_rec_item_id should be set to the last clicked on item
+        //get qty from entry
+        string? new_qty = null;
+        new_qty = dlg_qty_entry.get_text();
+        //get item from dropdown
+        int new_item_code_num = -1;
+        new_item_code_num = dlg_item_list_chooser.get_active();
+        message("Editing tr %i item %i with new code %i and qty %s",edit_rec_tr_id, edit_rec_item_id, new_item_code_num, new_qty);
+        //call db.edit_item with the right stuff
+        if (new_qty != null)
+        {
+            db.edit_item(edit_rec_tr_id,edit_rec_item_id,ref new_qty,db.record_fields.QUANTITY);
+            update_tree_store_row(selected_row_path);
+        }
+        if(new_item_code_num != -1)
+        {
+            string new_item_code = new_item_code_num.to_string();
+            db.edit_item(edit_rec_tr_id,edit_rec_item_id,ref new_item_code,db.record_fields.ITEM_CODE);
+            update_tree_store_row(selected_row_path);
+        }
+        //update the treestore from the db.
+
+        message("Dialog done!");
+        edit_record_dialog.hide();
     }
  
-    public void on_diag_cancel_click (Gtk.Button source) {
-        //edit_record_dialog.destroy();
+    public void dlg_cancel_click (Gtk.Button source) {
+        message("Dialog cancel!");
+        edit_record_dialog.hide();
     }
-*/
+
         
+    /*
     [CCode (instance_pos = -1)]
     public void diag_resp(Gtk.Dialog source)
     {
         message("Dialog response handler!");
     }
+    */
     [CCode (instance_pos = -1)]
     public void on_new_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();
-        string qty = test_entry.get_text();
+        string qty = qty_entry.get_text();
         //TODO: add item to actual database and get its transaction and item IDs
         string temp = "";
         add_to_item_list(1, item_id,ref qty,ref temp,ref temp);
@@ -181,7 +234,7 @@ public class AppGUI{
         string? item_name = null;
         string? db_tr_id = null;
         string? db_item_id = null;
-
+        selected_row_path = path;
         Gtk.TreeIter temp_iter;
         ls.get_iter(out temp_iter, path);
         ls.get(temp_iter,tree_store_fields.ITEM_NAME,&item_name,-1);
