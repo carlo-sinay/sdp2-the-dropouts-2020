@@ -116,7 +116,7 @@ public class Database : GLib.Object
             return 0;
     }
 
-    public int expand_values_in_record(int record_id, ref string? expanded)
+    private int expand_values_in_record(int record_id, ref string? expanded)
     {
         //expand record with human readable values
         //right now just makes it all uppercase, later we'll replace with
@@ -134,17 +134,8 @@ public class Database : GLib.Object
         expanded = line+"\n";
         return 0;
     }
- 
-    public int check_id_in_line(ref string line)
-    {
-        //check the ID at the start of the given string
-        //has to be valid log record
-        string[] fields = line.split(",");
-        int id = int.parse(fields[0]);
-        return id;
-    }
 
-    public string zero_padding(int i, int length)
+    private string zero_padding(int i, int length)
     {
         string output = "000";
 
@@ -213,7 +204,7 @@ public class Database : GLib.Object
         return (line.length > 4)||(line == "") ? false : true;
     }
     
-    public void seek_to(int tr_id, int it_id)
+    private void seek_to(int tr_id, int it_id)
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
@@ -296,7 +287,7 @@ public class Database : GLib.Object
     }
 
     //changed to modify member variables directly as well as return them (for now)
-    public int find_last_record_id()
+    private int find_last_record_id()
     {
         string? ln_chkr = null;
         string? ln = null;
