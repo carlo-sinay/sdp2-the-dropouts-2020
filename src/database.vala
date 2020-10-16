@@ -27,7 +27,7 @@ public class Database : GLib.Object
     if(m_log_file == null) stdout.printf("File not opened properly\n");
     stdout.printf("Opening log file\n");
     int temp = find_last_record_id();       //changed this to directly modify m_* vars
-    m_last_item_id = 0;
+  //  m_last_item_id = 0;
     if(m_last_transaction_id > 0)
     {
         seek_to(m_last_transaction_id,1);
@@ -38,6 +38,7 @@ public class Database : GLib.Object
       seek_to(m_last_item_id,1);
       m_log_file_tid_pos = m_last_item_id;
     }
+
     string filename3 = "../data/export/";
     file_check(ref filename3,1);             //check if export dir exists if not create it
 
@@ -215,7 +216,7 @@ public class Database : GLib.Object
         stdout.printf("writing %i bytes\n",rec_to_add.length);
         m_log_file.seek(0,FileSeek.END);
         m_last_transaction_id++;
-        m_last_item_id++;
+        m_last_item_id = 1;
         var final_m_last_transaction_id = "";
         var final_m_last_item_id = "";
 
@@ -228,7 +229,7 @@ public class Database : GLib.Object
           final_m_last_transaction_id = "0" + m_last_transaction_id.to_string();
         }
 
-        if (m_last_item_id < 10)
+      if (m_last_item_id < 10)
         {
           final_m_last_item_id = "00" + m_last_item_id.to_string();
         }
@@ -287,7 +288,7 @@ public class Database : GLib.Object
       string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
       m_last_item_id++;
-
+      
       var final_m_last_transaction_id = "";
       var final_m_last_item_id = "";
 
@@ -309,7 +310,7 @@ public class Database : GLib.Object
         final_m_last_item_id = "0" + m_last_item_id.to_string();
       }
 
-      
+
       m_log_file.seek(0,FileSeek.END);
       string data = final_m_last_transaction_id + "," + final_m_last_item_id + "," + data_add + "," + date + "\n";
       m_log_file.puts(data);
