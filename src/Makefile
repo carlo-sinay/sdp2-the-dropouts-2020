@@ -1,4 +1,5 @@
 PROJECT=php-sreps
+GUI_APP=php-sreps-gui
 COMPILER=valac
 GTK_PKG_FLAG=gtk+-3.0
 APP_PKG_FLAG=gio-2.0
@@ -16,5 +17,7 @@ ${PROJECT}: main.vala database.vala
 mkdir:
 	mkdir -p ../build
 
-gui: GTKExample.vala
-	${COMPILER} --pkg ${GTK_PKG_FLAG} GTKExample.vala -o GUIExample
+gui: mkdir
+	${COMPILER} --pkg ${GTK_PKG_FLAG} --pkg gmodule-2.0 GUI.vala database.vala items.vala -o ${BUILD_DIR}/${GUI_APP}
+gui-c: mkdir
+	${COMPILER} --pkg ${GTK_PKG_FLAG} --pkg gmodule-2.0 GUI.vala -C

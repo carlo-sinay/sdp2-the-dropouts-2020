@@ -39,8 +39,8 @@ void test_lists(Database *db){
 //Print out whole file
 void print_all(Database *db)
 {
-    stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_record_id);
-    for(int i = 1; i <= db->last_record_id; i++)
+    stdout.printf("\n\033[32m---------ALL (%i) RECORDS----------\n",db->last_transaction_id);
+    for(int i = 1; i <= db->last_transaction_id; i++)
     {
         for (int j = 1; j <= db->find_last_item_id(i); j++){
             stdout.printf("\t[%s]\n",db->read_record(i,j));
@@ -77,7 +77,7 @@ int main(string[] args) {
                         e - edit record\n
                         g - generate report\n
                         i - list items\n
-                        d - delete record\n
+                        d - delete Transaction or Item\n
                         z - delete report\n
                         q - exit\n
                       ");
@@ -160,28 +160,76 @@ int main(string[] args) {
                 break;
             case 'e': //edit record
                 stdout.printf("Which record? (By ID)\n");
-                string which_rec = stdin.read_line();
-                int id = int.parse(which_rec);
+                //Pick Transaction
+                string which_transaction = stdin.read_line();;
+                while (!myDb.check_id_input(ref which_transaction)) {
+                    stdout.printf("Error! Invalid input");
+                    which_transaction = stdin.read_line();
+                }
+                int tr_id = int.parse(which_transaction);
+                //Pick Item ID in Transaction
+                string which_itm_id = stdin.read_line();;
+                while (!myDb.check_id_input(ref which_itm_id)) {
+                    stdout.printf("Error! Invalid input");
+                    which_itm_id = stdin.read_line();
+                }
+                int itm_id = int.parse(which_itm_id);
 
-                stdout.printf("New Item type: \n");
-                string item_type = stdin.read_line();
+                //Populate Edit
+                stdout.printf("New Item Code: \n");
+                string item_code = stdin.read_line();
+                //Check Item Code Validity
+                while (!myDb.check_id_input(ref item_code)) {
+                    stdout.printf("Error! Invalid input");
+                    item_code = stdin.read_line();
+                }
+                int itm_code_int = int.parse(item_code);
 
                 stdout.printf("New Quantity: \n");
                 string quantity = stdin.read_line();
+                //Check QTY Validity
+                while (!myDb.check_qty_input(ref quantity)) {
+                    stdout.printf("Error! Invalid input");
+                    quantity = stdin.read_line();
+                }
+                int qty = int.parse(quantity);
 
                 stdout.printf("New Price: \n");
                 string price = stdin.read_line();
+                while (!myDb.check_price_input(ref price)) {
+                    stdout.printf("Error! Invalid input");
+                    price = stdin.read_line();
+                }
+                int int_price = int.parse(price);
 
-                string rec = item_type+","+quantity+","+price;
+                //Populate Record to update
+                string rec = myDb.zero_padding(itm_code_int,3)+",";
+                rec += myDb.zero_padding(qty,2)+",";
+                rec += myDb.zero_padding(int_price,4) + ",";
+                rec += "2020-10-15\n"; //Dummy Date
 
-                myDb.edit_record(id, ref rec);
+                myDb.edit_item(tr_id,itm_id,ref rec);
                 break;
-            case 'd':   //delete record
-                stdout.printf("Which record?\n");
-                string which_rec = stdin.read_line();
-                int id = int.parse(which_rec);
-                stdout.printf("Deleting %i\n", id);
-                myDb.delete_record(id);
+            case 'd':   //delete Transaction/Item
+                stdout.printf("Would you like to Delete Transaction (t) or Item (i)? ");
+                string decision = stdin.read_line().down();
+                if(decision == "t".down()){
+                    stdout.printf("Enter transaction ID to delete: \n");
+                    string tr_select = stdin.read_line();
+                    int tr_id = int.parse(tr_select);
+                    int item_id = tr_id;
+                    stdout.printf("Deleted Transaction: %i\n", tr_id);
+                    myDb.delete_transaction(tr_id);
+                }
+                else if(decision == "i".down()){
+                    stdout.printf("Enter Transaction ID: \n");
+                    string tr_select = stdin.read_line();
+                    int tr_id = int.parse(tr_select);
+                    stdout.printf("Enter Item ID: \n");
+                    string item_select = stdin.read_line();
+                    int item_id = int.parse(item_select);
+                    myDb.delete_item(tr_id, item_id);
+                }
                 break;
             case 'q':   //exit
                 return 0;

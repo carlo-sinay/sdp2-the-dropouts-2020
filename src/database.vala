@@ -14,6 +14,15 @@ public class Database : GLib.Object
 
     private List<Item> items;
 
+    public enum record_fields {
+        TRANSACTION_ID,             //field 0 - transaction ID
+        ITEM_ID,                    //field 1 - item ID
+        ITEM_CODE,                  //field 2 - item code
+        QUANTITY,                   //field 3 - quantity
+        PRICE,                      //field 4 - price (redundant but keep anyway)
+        DATE                        //field 5 - date in ISO8601, hyphen separated
+    }
+
     //Constructor
     public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
@@ -143,6 +152,78 @@ public class Database : GLib.Object
         return id;
     }
 
+<<<<<<< HEAD
+=======
+    public string zero_padding(int i, int length)
+    {
+        string output = "000";
+
+        //Check input validity
+        if ((i > 9999)||(i<1)){
+            return output; // 000 is an error code (for now)
+        }
+        
+        //Padding
+        switch (length){
+            //Pad for QTY
+            case 2: 
+                if ((i>9)&&(i<=99)){
+                    output = i.to_string();
+                }
+                if ((i>0)&&(i<=9)){
+                    output = "0" + i.to_string();
+                }
+                break;
+            //Pad for IDs
+            case 3:
+                if ((i>99)&&(i <= 999)) {
+                    output = i.to_string();
+                }
+                if ((i>9)&&(i<=99)){
+                    output = "0" + i.to_string();
+                }
+                if ((i>0)&&(i<=9)){
+                    output = "00" + i.to_string();
+                }
+                break;
+            //Pad for Price
+            case 4:
+                if ((i>999)&&(i <= 9999)) {
+                    output = i.to_string();
+                }
+                if ((i>99)&&(i<=999)){
+                    output = "0" + i.to_string();
+                }
+                if ((i>9)&(i<=99)){
+                    output = "00" + i.to_string();
+                }
+                if ((i>0)&(i<=9)){
+                    output = "000" + i.to_string();
+                }
+                break;
+            default:
+                break;
+        }
+        return output;
+    }
+
+
+    public bool check_id_input(ref string line){
+        //Ensures id doesn't exceed 999 or is null
+        return (line.length > 3)||(line == "") ? false : true;
+    }
+
+    public bool check_qty_input(ref string line){
+        //Ensures qty doesn't exceed 99
+        return (line.length > 2||(line == "")) ? false : true;
+    }
+
+    public bool check_price_input (ref string line) {
+        //Ensures price doesn't exceed 9999
+        return (line.length > 4)||(line == "") ? false : true;
+    }
+    
+>>>>>>> master
     public void seek_to(int tr_id, int it_id)
     {
         //read line by line from beginning and check first 2 fields
@@ -247,6 +328,7 @@ public class Database : GLib.Object
         m_log_file.flush();
     }
 
+<<<<<<< HEAD
     public void add_items(ref string data_add )
     {
       var now = new DateTime.now_local ();
@@ -323,6 +405,9 @@ public class Database : GLib.Object
 
 
     public string? read_record(int record_id, int item_id)
+=======
+    public string read_record(int record_id, int item_id)
+>>>>>>> master
     {
         //return record at line
         seek_to(record_id,item_id);
@@ -330,6 +415,15 @@ public class Database : GLib.Object
 
     }
 
+<<<<<<< HEAD
+=======
+    public string get_record_info(int tr_id, int item_id, record_fields which)
+    {
+        string info = read_record(tr_id,item_id);
+        string[] info_vals = info.split(",");
+        return info_vals[which];
+    }
+>>>>>>> master
 
     public int find_last_item_id(int tr_id)
     {
@@ -390,7 +484,30 @@ public class Database : GLib.Object
         return id;
     }
 
-    public void edit_record(int record_id,ref string new_record)
+    public void edit_item(int tr_id, int itm_id, ref string new_itm)
+    {
+        //Prepare updated item
+        string update = zero_padding(tr_id,3) + "," + zero_padding(itm_id,3) + ",";
+        update += new_itm;
+
+        //move FP to item AFTER target item
+        seek_to(tr_id,itm_id+1);
+
+        //Append all information after target edit to string
+        do {
+            update += m_log_file.read_line()+"\n";
+        } while (!m_log_file.eof());
+
+        //move FP back to START OF target item
+        seek_to(tr_id,itm_id);
+
+        //Update item
+        m_log_file.puts(update);
+        stdout.printf("Transaction Item Updated!\n");
+    }
+
+    //TO DO: Needs to return transaction target
+    public void edit_transaction(int record_id,ref string new_record)
     {
         //Prepare updated record
         string updated_rec = record_id.to_string() + "," + new_record + "\n";
@@ -410,18 +527,15 @@ public class Database : GLib.Object
         //       Important for editing the last records of the file only
     }
 
-    public void delete_record(int transaction_id) { //Must be changed
+    public void delete_transaction(int t_id) {
 
-        seek_to(transaction_id,1);
-        int itm_id = 1;
-        int t_id = transaction_id;
-        string dump = "";
-        string line;
-        string[3] fields = null;
+        seek_to(t_id,1);
+        string line = m_log_file.read_line();
+        int max_items = 1;
 
-        do{
-            line = m_log_file.read_line()+"\n";
+        string[] id_vals = line.split(",");
 
+<<<<<<< HEAD
             fields = {"","",""};
             //EOF Check
             if (line == null) {break;}
@@ -459,37 +573,49 @@ public class Database : GLib.Object
             do{
                 remove_rec += m_log_file.read_line()+"\n";
             } while(!m_log_file.eof());
+=======
+        while((line = m_log_file.read_line()) != null){
+            id_vals = line.split(",");
+            int new_tr = int.parse(id_vals[0]);
+            int new_item = int.parse(id_vals[1]);
+            //check for the next transaction
+            stdout.printf("max items : %i\n", max_items);
+            if(t_id != new_tr){ break; }
+            max_items = new_item;
+>>>>>>> master
         }
-        //move the file pointer back to the desired target ID
-        seek_to(transaction_id,1);
-        //replaces the record with remove_rec, effectively deleting the record
-        m_log_file.puts(remove_rec);
-        stdout.printf("Deleted record!\n");
+        for(int i=0; i < max_items; i++){
+            delete_item(t_id,i+1);
+        } 
     }
 
-    public string whitespace_padding(int size){
-        string padding = null;
-        for(int i = 0; i < size; i++){
-            padding+=" ";
+    //deletes an item within a transaction
+    public void delete_item(int t_id, int i_id){
+        
+        seek_to(t_id,1);
+        string zeros = "0000000000000000000000";
+        //gets ID's from the read line
+        string tr_id = get_record_info(t_id,i_id,TRANSACTION_ID);
+        string it_id = get_record_info(t_id,i_id,ITEM_ID);
+
+        //declare delete line string to replace old info in the transaction
+        string del_line = tr_id + "," + it_id + "," + zeros.to_string() + "\n";
+
+        if(t_id < m_last_transaction_id){
+            if(i_id == m_last_item_id){
+                seek_to(t_id+1,1);
+                do{
+                    del_line += m_log_file.read_line()+"\n";
+                }while(!m_log_file.eof());
+            }
         }
-        return padding;
+        //move to desired item within the tranasction
+        seek_to(t_id, i_id);
+        //deletes item in transaction
+        m_log_file.puts(del_line);
+        stdout.printf("Deleting Item %i in Transaction %i\n", i_id, t_id);
+
     }
-
-    //x lines + 12 - into another string
-
-    /*Delete Transaction:
-    Needs to take in both transaction_id and item_id
-    needs to keep the trailing zeros as there's a format for the record
-    Will have to check for trailing zeros  by checking if the int at the location is 0 or higher than 0
-    if its 0 - check the next number; else thats the ID; if 2nd num is zero; then the last number will be between 1-9; else its the ID.
-    Do for both transaction deletion and ID deletion
-    Example for deleting entire transaction:
-    E.g.:   001,[DELETED] (commits the rest of transaction_id 001)
-    Example for deleting an item within the transaction:
-    001,069,ITM,99,2130,2020-10-03
-    001,098,[DELETED]
-    001,420,ITM,10,2143,2020-10-03
-    */
 
     //deletes the .csv report in the data/export directory.
     /*User specifies which report is to be deleted in console (currently testing)
@@ -532,7 +658,7 @@ public class Database : GLib.Object
     }
 
     /* getters and setters */
-    public int last_record_id {
+    public int last_transaction_id {
         get { return m_last_transaction_id; }
     }
 }
