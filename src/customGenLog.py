@@ -62,6 +62,20 @@ def main():
 	item_list_file.close()
 	print(items_total)
 
+	#Set Start/End Date Vars
+	start = None
+	end = None
+	#User Sets Date
+	while ((start == None) or (end == None)):
+		set_date = input("Input Date (YYYY-MM-DD):\n>")
+		try:
+			if (start == None):
+				start = datetime.datetime.strptime(set_date,'%Y-%m-%d').date()
+			else:
+				end = datetime.datetime.strptime(set_date,'%Y-%m-%d').date()
+		except:
+			print("Incorrect Format")
+
 	#Start and End Dates
 	start = datetime.date(2020,8,15)
 	end = datetime.date(2020,10,15)
@@ -107,7 +121,7 @@ def main():
 			output += itas(code,3) + "," #Item Code
 			output += itas(qty,2) + "," #Qty
 			output += itas(price,4) + "," #Price
-			output += t_date.isoformat() + "\n"
+			output += t_date.isoformat() + "\n" #Start and End Dates
 
 			#Write Record
 			file.write(output)
