@@ -152,8 +152,7 @@ public class Database : GLib.Object
         return id;
     }
 
-<<<<<<< HEAD
-=======
+
     public string zero_padding(int i, int length)
     {
         string output = "000";
@@ -162,11 +161,11 @@ public class Database : GLib.Object
         if ((i > 9999)||(i<1)){
             return output; // 000 is an error code (for now)
         }
-        
+
         //Padding
         switch (length){
             //Pad for QTY
-            case 2: 
+            case 2:
                 if ((i>9)&&(i<=99)){
                     output = i.to_string();
                 }
@@ -222,8 +221,8 @@ public class Database : GLib.Object
         //Ensures price doesn't exceed 9999
         return (line.length > 4)||(line == "") ? false : true;
     }
-    
->>>>>>> master
+
+
     public void seek_to(int tr_id, int it_id)
     {
         //read line by line from beginning and check first 2 fields
@@ -328,7 +327,7 @@ public class Database : GLib.Object
         m_log_file.flush();
     }
 
-<<<<<<< HEAD
+
     public void add_items(ref string data_add )
     {
       var now = new DateTime.now_local ();
@@ -370,7 +369,7 @@ public class Database : GLib.Object
       string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
       m_last_item_id++;
-      
+
       var final_m_last_transaction_id = "";
       var final_m_last_item_id = "";
 
@@ -404,10 +403,9 @@ public class Database : GLib.Object
     }
 
 
-    public string? read_record(int record_id, int item_id)
-=======
+
     public string read_record(int record_id, int item_id)
->>>>>>> master
+
     {
         //return record at line
         seek_to(record_id,item_id);
@@ -415,15 +413,14 @@ public class Database : GLib.Object
 
     }
 
-<<<<<<< HEAD
-=======
+
     public string get_record_info(int tr_id, int item_id, record_fields which)
     {
         string info = read_record(tr_id,item_id);
         string[] info_vals = info.split(",");
         return info_vals[which];
     }
->>>>>>> master
+
 
     public int find_last_item_id(int tr_id)
     {
@@ -535,45 +532,6 @@ public class Database : GLib.Object
 
         string[] id_vals = line.split(",");
 
-<<<<<<< HEAD
-            fields = {"","",""};
-            //EOF Check
-            if (line == null) {break;}
-            fields = line.split(",",3);
-            t_id = int.parse(fields[0]);
-            //Check we're still in the same transaction
-            if (t_id != transaction_id){break;}
-            //If we are, assign itm_id
-            itm_id = int.parse(fields[1]);
-            stdout.printf("Item ID: %d\n", itm_id);
-            if(t_id < itm_id) {dump += line;}
-            stdout.printf("DUMP LINE: %s\n", dump);
-            stdout.printf("DUMP LENGTH: %d\n", dump.length);
-            whitespace_padding(dump.length);
-
-        }while(!m_log_file.eof());
-
-        stdout.printf("LAST ITEM ID TEST: %d\n", find_last_item_id(transaction_id));
-
-        //Read every line of file and add to 'dump' until next transaction ID
-        //Take size of dump and call whitespace_padding(dump.size())
-
-        do{
-            line = m_log_file.read_line();
-            //stdout.printf("%s\n", line);
-        }while(!m_log_file.eof());
-
-        //Declare remove record string to delete the old information in the record
-        string remove_rec = "00" + transaction_id.to_string() + ",001," + "[DELETED]" + "\n";
-        //if statement checks if its reached the last record or not
-        if(transaction_id < m_last_transaction_id){
-            //Seeks file pointer to after the target ID
-            seek_to(transaction_id+1,1);
-            //appends the records after the updated record info
-            do{
-                remove_rec += m_log_file.read_line()+"\n";
-            } while(!m_log_file.eof());
-=======
         while((line = m_log_file.read_line()) != null){
             id_vals = line.split(",");
             int new_tr = int.parse(id_vals[0]);
@@ -582,16 +540,15 @@ public class Database : GLib.Object
             stdout.printf("max items : %i\n", max_items);
             if(t_id != new_tr){ break; }
             max_items = new_item;
->>>>>>> master
         }
         for(int i=0; i < max_items; i++){
             delete_item(t_id,i+1);
-        } 
+        }
     }
 
     //deletes an item within a transaction
     public void delete_item(int t_id, int i_id){
-        
+
         seek_to(t_id,1);
         string zeros = "0000000000000000000000";
         //gets ID's from the read line
