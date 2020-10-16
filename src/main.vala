@@ -109,56 +109,52 @@ int main(string[] args) {
                 stdout.printf("\033[33mRecord [%i]: [%s]\033[0m\n",id,myDb.read_record(id,item_id));
                 break;
             case 'e': //edit record
-                stdout.printf("Which record? (By ID)\n");
                 //Pick Transaction
-                string which_transaction = stdin.read_line();;
+                stdout.printf("Which record? (By ID)\n");
+                string which_transaction = stdin.read_line();
                 while (!myDb.check_id_input(ref which_transaction)) {
                     stdout.printf("Error! Invalid input");
                     which_transaction = stdin.read_line();
                 }
                 int tr_id = int.parse(which_transaction);
                 //Pick Item ID in Transaction
-                string which_itm_id = stdin.read_line();;
+                stdout.printf("Which item ID?\n");
+                string which_itm_id = stdin.read_line();
                 while (!myDb.check_id_input(ref which_itm_id)) {
                     stdout.printf("Error! Invalid input");
                     which_itm_id = stdin.read_line();
                 }
                 int itm_id = int.parse(which_itm_id);
+                //Pick Field in Record
+                stdout.printf("Which field? (Type 3 - 6)\n");
+                string which_field = stdin.read_line();
+                int field = int.parse(which_field);
 
-                //Populate Edit
-                stdout.printf("New Item Code: \n");
-                string item_code = stdin.read_line();
-                //Check Item Code Validity
-                while (!myDb.check_id_input(ref item_code)) {
-                    stdout.printf("Error! Invalid input");
-                    item_code = stdin.read_line();
+                Database.record_fields f;
+                //cast int to record_fields enum
+                switch(field){
+                    case 3:
+                        f = ITEM_CODE;
+                        break;
+                    case 4:
+                        f = QUANTITY;
+                        break;
+                    case 5:
+                        f = PRICE;
+                        break;
+                    case 6:
+                        f = DATE;
+                        break;
+                    default:
+                        f = DATE;
+                        break;
                 }
-                int itm_code_int = int.parse(item_code);
-
-                stdout.printf("New Quantity: \n");
-                string quantity = stdin.read_line();
-                //Check QTY Validity
-                while (!myDb.check_qty_input(ref quantity)) {
-                    stdout.printf("Error! Invalid input");
-                    quantity = stdin.read_line();
-                }
-                int qty = int.parse(quantity);
-
-                stdout.printf("New Price: \n");
-                string price = stdin.read_line();
-                while (!myDb.check_price_input(ref price)) {
-                    stdout.printf("Error! Invalid input");
-                    price = stdin.read_line();
-                }
-                int int_price = int.parse(price);
+                //Prepare Update
+                stdout.printf("Update: \n");
+                string edit = stdin.read_line();
 
                 //Populate Record to update
-                string rec = myDb.zero_padding(itm_code_int,3)+",";
-                rec += myDb.zero_padding(qty,2)+",";
-                rec += myDb.zero_padding(int_price,4) + ",";
-                rec += "2020-10-15\n"; //Dummy Date
-
-                myDb.edit_item(tr_id,itm_id,ref rec);
+                myDb.edit_item(tr_id,itm_id,ref edit,f);
                 break;
             case 'd':   //delete Transaction/Item
                 stdout.printf("Would you like to Delete Transaction (t) or Item (i)? ");
