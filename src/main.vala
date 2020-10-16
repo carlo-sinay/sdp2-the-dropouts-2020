@@ -1,9 +1,10 @@
 //Test Functions
 //Testing - Find last record id
 void test_find_last_record_id(Database *db){
-    int id = db->find_last_record_id();
+    int tr_id = db->last_transaction_id;
+    int item_id = db->find_last_item_id(tr_id);
 
-    stdout.printf("Last ID: %d\n",id);
+    stdout.printf("Last record -> tr: %i\titem: %i\n",tr_id,item_id);
 }
 
 void test_find_last_item_id(Database *db, int i){
@@ -71,7 +72,6 @@ int main(string[] args) {
     while(true){
         print_all(myDb);
         stdout.printf("
-                        c - check line\n
                         a - add record\n
                         r - read record\n
                         e - edit record\n
@@ -110,7 +110,7 @@ int main(string[] args) {
                 break;
             case 'e': //edit record
                 //Pick Transaction
-                stdout.printf("Which record? (By ID)\n");
+                stdout.printf("Which record? (By transaction ID)\n");
                 string which_transaction = stdin.read_line();
                 while (!myDb.check_id_input(ref which_transaction)) {
                     stdout.printf("Error! Invalid input");
@@ -126,27 +126,27 @@ int main(string[] args) {
                 }
                 int itm_id = int.parse(which_itm_id);
                 //Pick Field in Record
-                stdout.printf("Which field? (Type 3 - 6)\n");
+                stdout.printf("Which field? [(c)ode, (q)uantity, (p)rice, (d)ate]\n");
                 string which_field = stdin.read_line();
-                int field = int.parse(which_field);
+                //int field = int.parse(which_field);
 
                 Database.record_fields f;
                 //cast int to record_fields enum
-                switch(field){
-                    case 3:
+                switch(which_field.down()){
+                    case "c":
                         f = ITEM_CODE;
                         break;
-                    case 4:
+                    case "q":
                         f = QUANTITY;
                         break;
-                    case 5:
+                    case "p":
                         f = PRICE;
                         break;
-                    case 6:
+                    case "d":
                         f = DATE;
                         break;
                     default:
-                        f = DATE;
+                        f = ITEM_CODE;
                         break;
                 }
                 //Prepare Update
@@ -187,13 +187,7 @@ int main(string[] args) {
                 stdout.printf("generating report\n");
                 myDb.generate_report();
                 break;
-            case 'c':
-                stdout.printf("Type in test record. \n");
-                string which_line = stdin.read_line();
-                int line_id = myDb.check_id_in_line(ref which_line);
-                stdout.printf("Record [ %s ] has id %i \n",which_line,line_id);
-                break;
-            case 'z':  //delete report
+           case 'z':  //delete report
                 stdout.printf("Enter name of report: \n");
                 string record_name = stdin.read_line();
                 myDb.delete_report(record_name);

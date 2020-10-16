@@ -5,6 +5,7 @@ public class AppGUI{
     private int edit_rec_item_id;
     public Gtk.Label test_label;
     private Gtk.Entry test_entry;
+    private Gtk.Builder m_bldr;
     private Gtk.ListStore item_list_store;
     private Gtk.TreeStore ls;
     private Gtk.TreeIter ti;
@@ -29,6 +30,7 @@ public class AppGUI{
     public AppGUI(ref Gtk.Builder bld)
     {
         db = new Database();
+        m_bldr = bld;
 
 
         edit_rec_item_id = -1;
@@ -47,6 +49,7 @@ public class AppGUI{
         update_item_chooser();
         display_existing_records();
         message("Done.");
+        if(edit_record_dialog == null)  message("DIALOG NULL");
     }
 
     private void log(string msg)
@@ -85,7 +88,7 @@ public class AppGUI{
             return;
         }
         ls.append(out ti2, ti);
-        ls.set(ti2, tree_store_fields.TRANSACTION_ID,"69",
+        ls.set(ti2, tree_store_fields.TRANSACTION_ID,"",
                     tree_store_fields.ITEM_NAME, db.get_item(item_code).getName(),
                     tree_store_fields.QUANTITY, qty,
                     tree_store_fields.PRICE, format_price_string(item_code,qty),
@@ -145,8 +148,9 @@ public class AppGUI{
         log("Running dialog \n");
         int res = edit_record_dialog.run();
         log("response id: " + res.to_string() + "\n");
-        //edit_record_dialog.destroy();
+        edit_record_dialog.hide();
     }
+    /*
     [CCode (instance_pos = -1)]
     public void on_diag_done_click (Gtk.Button source) {
        log("Diag done!\n");
@@ -155,7 +159,13 @@ public class AppGUI{
     public void on_diag_cancel_click (Gtk.Button source) {
         //edit_record_dialog.destroy();
     }
-
+*/
+        
+    [CCode (instance_pos = -1)]
+    public void diag_resp(Gtk.Dialog source)
+    {
+        message("Dialog response handler!");
+    }
     [CCode (instance_pos = -1)]
     public void on_new_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();

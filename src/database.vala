@@ -324,7 +324,7 @@ public class Database : GLib.Object
         string update= zero_padding(tr_id,3) + "," + zero_padding(itm_id,3) + ",";
         //Inject Item Code to updated String
         if (which == ITEM_CODE){
-            update += edit + ",";
+            update += zero_padding(int.parse(edit),3) + ",";
             update += get_record_info(tr_id, itm_id, QUANTITY) + ",";
             update += get_record_info(tr_id, itm_id, PRICE) + ",";
             update += get_record_info(tr_id, itm_id, DATE);
@@ -332,7 +332,7 @@ public class Database : GLib.Object
         //Inject Quantity to updated String
         if (which == QUANTITY){
             update += get_record_info(tr_id, itm_id, ITEM_CODE) + ",";
-            update += edit + ",";
+            update += zero_padding(int.parse(edit),2) + ",";
             update += get_record_info(tr_id, itm_id, PRICE) + ",";
             update += get_record_info(tr_id, itm_id, DATE);
         }
@@ -340,7 +340,7 @@ public class Database : GLib.Object
         if (which == PRICE){
             update += get_record_info(tr_id, itm_id, ITEM_CODE) + ",";
             update += get_record_info(tr_id, itm_id, QUANTITY) + ",";
-            update += edit + ",";
+            update += zero_padding(int.parse(edit),4) + ",";
             update += get_record_info(tr_id, itm_id, DATE);
         }
         //Inject Date to updated String
@@ -353,7 +353,7 @@ public class Database : GLib.Object
         update += "\n";
 
         //move FP to item AFTER target item
-        seek_to(tr_id,itm_id+1);
+        /*seek_to(tr_id,itm_id+1);
 
         //Append all information after target edit to string
         do {
@@ -361,8 +361,8 @@ public class Database : GLib.Object
         } while (!m_log_file.eof());
 
         //move FP back to START OF target item
+*/
         seek_to(tr_id,itm_id);
-
         //Update item
         m_log_file.puts(update);
         stdout.printf("Transaction Item Updated!\n");

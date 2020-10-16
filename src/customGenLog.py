@@ -53,13 +53,14 @@ def main():
 	item_list_file = open("../data/itemList","r")
 
 	#get number of available items from item list
-	items = 0
+	items_total = 0
 	while(True):
 		if(item_list_file.readline() == ""):
 			break
-		#print("Found item!", items)
-		items += 1
+		print("Found item!", items_total)
+		items_total += 1
 	item_list_file.close()
+	print(items_total)
 
 	#Set Start/End Date Vars
 	start = None
@@ -74,6 +75,10 @@ def main():
 				end = datetime.datetime.strptime(set_date,'%Y-%m-%d').date()
 		except:
 			print("Incorrect Format")
+
+	#Start and End Dates
+	start = datetime.date(2020,8,15)
+	end = datetime.date(2020,10,15)
 
 	output = "String Initialised"
 	#Add 1000 Transactions
@@ -105,7 +110,7 @@ def main():
 		#Add x number of Items to Transaction
 		items = 1
 		while (items <= item_count):
-			code = random.randint(1,items) #Up to 5 item types
+			code = random.randint(0,items_total-1) #Up to 5 item types
 			qty = random.randint(1,99) #Max Quantity of 99
 			price = random.randint(1,9999) #Max Price of 9999
 
