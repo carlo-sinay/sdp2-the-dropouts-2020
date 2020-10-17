@@ -251,23 +251,25 @@ public class Database : GLib.Object
     }
 
 
-    public void add_record(ref string rec_to_add)
+    public void add_transaction(ref string rec_to_add)
     {
-        //for testing purposes - adding a line to the file
 
+        //obtaining date from local machine
         var now = new DateTime.now_local ();
         var date_year = now.get_year().to_string ();
-        var date_month = now.get_month().to_string ();
-        var date_day = now.get_day_of_month().to_string();
-        string lead = "0";
-        string fdate_day = "";
-        string fdate_month = "";
+        var date_month = now.get_month();
+        var date_day = now.get_day_of_month();
+        var fdate_day = "";
+        var fdate_month = "";
+
+        //adding prefix zero to the date of the month if required
         if (now.get_day_of_month() < 10)
         {
 
 
 
-          fdate_day = lead.concat(date_day);
+          fdate_day = zero_padding(date_day,2);
+
 
         }
         else
@@ -275,13 +277,13 @@ public class Database : GLib.Object
           fdate_day = now.get_day_of_month().to_string();
 
         }
-
+        //adding prefix zero to the month of the year if required
         if (now.get_month() < 10)
         {
 
 
 
-          fdate_month = lead.concat(date_day);
+          fdate_month = zero_padding(date_month,2);
 
         }
         else
@@ -290,7 +292,7 @@ public class Database : GLib.Object
 
         }
 
-
+        //variable date stores current date in formate yyyy-mm-dd
         string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
         stdout.printf("writing %i bytes\n",rec_to_add.length);
@@ -300,26 +302,44 @@ public class Database : GLib.Object
         var final_m_last_transaction_id = "";
         var final_m_last_item_id = "";
 
+        // adding prefix zeros to transaction_id and item_id
+
         if (m_last_transaction_id < 10)
         {
-          final_m_last_transaction_id = "00" + m_last_transaction_id.to_string();
+          final_m_last_transaction_id = zero_padding(m_last_transaction_id,3);
+
         }
         else
         {
-          final_m_last_transaction_id = "0" + m_last_transaction_id.to_string();
+          final_m_last_transaction_id = zero_padding(m_last_transaction_id,2);
+
         }
 
       if (m_last_item_id < 10)
         {
-          final_m_last_item_id = "00" + m_last_item_id.to_string();
+          final_m_last_item_id = zero_padding(m_last_item_id,3);
+
         }
         else
         {
-          final_m_last_item_id = "0" + m_last_item_id.to_string();
+          final_m_last_item_id = zero_padding(m_last_item_id,2);
+
         }
 
+        /* spliting the values entered by the user in terminal and adding prefix
+        zeros to store data in intended format.*/
+        string [] padding = rec_to_add.split (",");
+        var quantity = zero_padding(int.parse(padding[1]),2);
+        var price = zero_padding(int.parse(padding[2]),4);
+        var type = zero_padding(int.parse(padding[0]),3);
+
+
+
         //m_log_file_tid_pos = m_last_transaction_id;
-        string record = final_m_last_transaction_id + "," + final_m_last_item_id + "," + rec_to_add  + "," + date +  "\n";
+
+        //variable record stores all the information in the form of string to be saved in the log file
+
+        string record = final_m_last_transaction_id + "," + final_m_last_item_id + "," + type.to_string() + "," + quantity.to_string() + "," + price.to_string() + "," + date +  "\n";
         m_log_file.puts(record);
         seek_to(m_last_transaction_id,1);
         seek_to(m_last_item_id,1);
@@ -327,22 +347,27 @@ public class Database : GLib.Object
         m_log_file.flush();
     }
 
-
+    /* add_items function is called only after at least one record added to a transaction_id
+       and the user tends to add more items to the same transaction id. Basically To add a
+       record within a transaction.
+    */
     public void add_items(ref string data_add )
     {
+      //obtaining date from local machine
       var now = new DateTime.now_local ();
       var date_year = now.get_year().to_string ();
-      var date_month = now.get_month().to_string ();
-      var date_day = now.get_day_of_month().to_string();
-      string lead = "0";
+      var date_month = now.get_month();
+      var date_day = now.get_day_of_month();
       string fdate_day = "";
       string fdate_month = "";
+
+      //adding prefix zero to the date of the month if required
       if (now.get_day_of_month() < 10)
       {
 
 
 
-        fdate_day = lead.concat(date_day);
+        fdate_day = zero_padding(date_day,2);
 
       }
       else
@@ -351,12 +376,13 @@ public class Database : GLib.Object
 
       }
 
+      //adding prefix zero to the month of the year if required
       if (now.get_month() < 10)
       {
 
 
 
-        fdate_month = lead.concat(date_day);
+        fdate_month = zero_padding(date_month,2);
 
       }
       else
@@ -365,7 +391,7 @@ public class Database : GLib.Object
 
       }
 
-
+      //variable date stores current date in formate yyyy-mm-dd
       string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
       m_last_item_id++;
@@ -373,31 +399,48 @@ public class Database : GLib.Object
       var final_m_last_transaction_id = "";
       var final_m_last_item_id = "";
 
+      // adding prefix zeros to transaction_id and item_id
+
       if (m_last_transaction_id < 10)
       {
-        final_m_last_transaction_id = "00" + m_last_transaction_id.to_string();
+        final_m_last_transaction_id = zero_padding(m_last_transaction_id,3);
+
       }
       else
       {
-        final_m_last_transaction_id = "0" + m_last_transaction_id.to_string();
+        final_m_last_transaction_id = zero_padding(m_last_transaction_id,2);
+
       }
 
       if (m_last_item_id < 10)
       {
-        final_m_last_item_id = "00" + m_last_item_id.to_string();
+        final_m_last_item_id = zero_padding(m_last_item_id,3);
+
       }
       else
       {
-        final_m_last_item_id = "0" + m_last_item_id.to_string();
+        final_m_last_item_id = zero_padding(m_last_transaction_id,2);
+
       }
 
 
+      /* spliting the values entered by the user in terminal and adding prefix
+      zeros to store data in intended format.*/
+
+      string [] padding = data_add.split (",");
+      var quantity = zero_padding(int.parse(padding[1]),2);
+      var price = zero_padding(int.parse(padding[2]),4);
+      var type = zero_padding(int.parse(padding[0]),3);
+
+
       m_log_file.seek(0,FileSeek.END);
-      string data = final_m_last_transaction_id + "," + final_m_last_item_id + "," + data_add + "," + date + "\n";
+
+      //variable data stores all the information in the form of string to be saved in the log file
+      string data = final_m_last_transaction_id + "," + final_m_last_item_id + "," + type.to_string() + "," + quantity.to_string() + "," + price.to_string() + "," + date + "\n";
       m_log_file.puts(data);
       seek_to(m_last_transaction_id,1);
       seek_to(m_last_item_id,1);
-      stdout.printf("Adding item to the same transaction item id!\n");
+      stdout.printf("Adding another item to the same transaction item id!\n");
       m_log_file.flush();
 
     }
