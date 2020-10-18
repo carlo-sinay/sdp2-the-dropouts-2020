@@ -1,3 +1,8 @@
+public struct point {
+    int x;
+    int y;
+}
+
 public class Database : GLib.Object
 {
     //Variables
@@ -14,6 +19,9 @@ public class Database : GLib.Object
 
     private List<Item> items;
 
+    private List<int> x_points;
+    private List<int> y_points;
+
     public enum record_fields {
         TRANSACTION_ID,             //field 0 - transaction ID
         ITEM_ID,                    //field 1 - item ID
@@ -27,54 +35,54 @@ public class Database : GLib.Object
     public Database(){
          //load an initial hardcoded file here, will add checks and stuff later
          //for now we assume there's no existing file, if there is we delete and start from scratch
-    stdout.printf("Checking if log file exists...\n");
-    string filename1 = "../data/logs/"; 
-    file_check(ref filename1, 1);                  //check if logs dir exists
-    string filename2 = "../data/logs/testLog"; 
-    file_check(ref filename2, 0);                  //create log file if not there
-    m_log_file = FileStream.open(filename2,"r+");
-    if(m_log_file == null) stdout.printf("File not opened properly\n");
-    stdout.printf("Opening log file\n");
-    int temp = find_last_record_id();       //changed this to directly modify m_* vars
-    m_last_item_id = 0;
-    if(m_last_transaction_id > 0)
-    {
-        seek_to(m_last_transaction_id,1);
-        m_log_file_tid_pos = m_last_transaction_id;
-    }
-    string filename3 = "../data/export/";
-    file_check(ref filename3,1);             //check if export dir exists if not create it
-    
-    items = new List<Item>();
-    make_item_list();
-    
-    m_next_report_id = 1;
+        stdout.printf("Checking if log file exists...\n");
+        string filename1 = "../data/logs/"; 
+        file_check(ref filename1, 1);                  //check if logs dir exists
+        string filename2 = "../data/logs/testLog"; 
+        file_check(ref filename2, 0);                  //create log file if not there
+        m_log_file = FileStream.open(filename2,"r+");
+        if(m_log_file == null) stdout.printf("File not opened properly\n");
+        stdout.printf("Opening log file\n");
+        int temp = find_last_record_id();       //changed this to directly modify m_* vars
+        m_last_item_id = 0;
+        if(m_last_transaction_id > 0)
+        {
+            seek_to(m_last_transaction_id,1);
+            m_log_file_tid_pos = m_last_transaction_id;
+        }
+        string filename3 = "../data/export/";
+        file_check(ref filename3,1);             //check if export dir exists if not create it
+        
+        items = new List<Item>();
+        make_item_list();
+        
+        m_next_report_id = 1;
     }
 
 
     //Functions
     private int file_check(ref string filename, int file_or_dir)
     {
-            //checks if file (or directory exists) and then creates it if it doesn't (creates dir with parents if dir)
-            //0 = file
-            //1 = dir
-            //return 0 on success
-            //string path = filename;
-            File temp = File.new_for_path(filename);            
+        //checks if file (or directory exists) and then creates it if it doesn't (creates dir with parents if dir)
+        //0 = file
+        //1 = dir
+        //return 0 on success
+        //string path = filename;
+        File temp = File.new_for_path(filename);            
 
-            if(temp.query_exists()) return 1;           //file already exists
-            else
+        if(temp.query_exists()) return 1;           //file already exists
+        else
+        {
+            if(file_or_dir==1)
             {
-                if(file_or_dir==1)
-                {
-                    //its a dir and it doesn't exist
-                    temp.make_directory_with_parents();
-                } else {
-                    //its a file and it doesn't exist
-                    temp.create(FileCreateFlags.NONE);
-                } 
-            }
-            return temp.query_exists() ? 0 : 1;
+                //its a dir and it doesn't exist
+                temp.make_directory_with_parents();
+            } else {
+                //its a file and it doesn't exist
+                temp.create(FileCreateFlags.NONE);
+            } 
+        }
+        return temp.query_exists() ? 0 : 1;
     }
     //Call to show Position of File Pointer in terminal
     private void debug_show_fp(){
@@ -351,17 +359,6 @@ public class Database : GLib.Object
             update += edit;
         }
         update += "\n";
-
-        //move FP to item AFTER target item
-        /*seek_to(tr_id,itm_id+1);
-
-        //Append all information after target edit to string
-        do {
-            update += m_log_file.read_line()+"\n";
-        } while (!m_log_file.eof());
-
-        //move FP back to START OF target item
-*/
         seek_to(tr_id,itm_id);
         //Update item
         m_log_file.puts(update);
@@ -449,6 +446,35 @@ public class Database : GLib.Object
             items.append(itm);
         }
     }
+
+    public point getPoint(int qty, int month){
+        point p = {month, qty};
+        return p;
+    }
+
+    public void generate_data(int start_month, int end_month, int item_code){
+        int length = end_month - start_month;
+
+        //Go through every record
+        seek_to(1,1);
+
+        int tr_id = 1;
+        int itm_id = 1;
+        while ((tr_id < m_last_transaction_id)&&(itm_id < m_last_item_id)){
+            itm_id = find_last_item_id(tr_id);
+
+            string rec_date = get_record_info(tr_id,itm_id,DATE);
+            string[] date_info = rec_date.split("-");
+            int month = int.parse(date_info[1]);
+
+            //Check within Date Range
+            if ((month <= end_month)&&(month >= start_month)){
+                //TODO: 
+                continue;
+            }
+        }
+    }
+
 
     public Item get_item(int index){
         return items.nth_data(index);
