@@ -37,6 +37,12 @@ void test_lists(Database *db){
     stdout.printf("name: [%s]",itm.getName());
 }
 
+void test_generate_monthly_data(Database *db){
+    int month = 9;
+    int itm = 2;
+    stdout.printf("Total Qty: [%i]",db->generate_monthly_data(month, itm));
+}
+
 //Print out whole file
 void print_all(Database *db)
 {
@@ -69,8 +75,20 @@ int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
     //get console input for now
+
+    test_generate_monthly_data(myDb);
+
+    Database.record_fields t = DATE;
+    string line = myDb.get_record_info(1,1,t);
+    
+    //stdout.printf("Data: %d",myDb.monthly_data[10]);
+    for (int i = 0; i < myDb.monthly_data.length; i++){
+        stdout.printf("\nData: [%i,%i]",i,myDb.monthly_data[i]);
+    }
+
+
     while(true){
-        print_all(myDb);
+        //print_all(myDb);
         stdout.printf("
                         a - add record\n
                         r - read record\n
