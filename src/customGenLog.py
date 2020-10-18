@@ -110,7 +110,7 @@ def main():
 		#Add x number of Items to Transaction
 		items = 1
 		while (items <= item_count):
-			code = random.randint(0,items_total-1) #Up to 5 item types
+			code = random.randint(1,items_total-1) #Up to 5 item types
 			qty = random.randint(1,99) #Max Quantity of 99
 			price = random.randint(1,9999) #Max Price of 9999
 
