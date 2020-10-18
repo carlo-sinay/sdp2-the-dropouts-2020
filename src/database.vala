@@ -1,6 +1,7 @@
-public struct point {
-    int x;
-    int y;
+public struct graph_info_t {
+    int month;
+    int item_code;
+    int[] data;
 }
 
 public class Database : GLib.Object
@@ -19,8 +20,7 @@ public class Database : GLib.Object
 
     private List<Item> items;
 
-    private List<int> x_points;
-    private List<int> y_points;
+    public int[] monthly_data = new int[12];
 
     public enum record_fields {
         TRANSACTION_ID,             //field 0 - transaction ID
@@ -96,6 +96,9 @@ public class Database : GLib.Object
     
     private void debug_msg_c(char c){
         stdout.printf("\n\033[31m Error => Got [%c] \033[0m",c);
+    }
+    private void debug_msg_i(int i){
+        stdout.printf("\n\033[31m Error => Got [%i] \033[0m",i);
     }
 
     public int generate_report()
@@ -195,7 +198,6 @@ public class Database : GLib.Object
         }
         return output;
     }
-
 
     public bool check_id_input(ref string line){
         //Ensures id doesn't exceed 999 or is null
@@ -447,31 +449,37 @@ public class Database : GLib.Object
         }
     }
 
-    public point getPoint(int qty, int month){
-        point p = {month, qty};
-        return p;
+    public int generate_monthly_data(int month, int item_code){
+        int tot_qty = 0;
+        string to_read = "";
+        //Seek to the start of the file
+        m_log_file.rewind();
+
+        //Reset monthly Data
+        monthly_data[month-1] = 0;
+
+        //Check entire database
+        while((to_read = m_log_file.read_line()) != null){
+            string[] line_info = to_read.split(",");
+            string[] date_info = line_info[5].split("-");
+            //Check Month
+            if (int.parse(date_info[1]) == month){
+                //Check Code
+                if (int.parse(line_info[2]) == item_code){
+                    tot_qty += int.parse(line_info[3]);
+                }
+            }
+        }
+
+        //Update Monthly Data
+        monthly_data[month-1] = tot_qty;
+
+        return tot_qty;
     }
 
-    public void generate_data(int start_month, int end_month, int item_code){
-        int length = end_month - start_month;
-
-        //Go through every record
-        seek_to(1,1);
-
-        int tr_id = 1;
-        int itm_id = 1;
-        while ((tr_id < m_last_transaction_id)&&(itm_id < m_last_item_id)){
-            itm_id = find_last_item_id(tr_id);
-
-            string rec_date = get_record_info(tr_id,itm_id,DATE);
-            string[] date_info = rec_date.split("-");
-            int month = int.parse(date_info[1]);
-
-            //Check within Date Range
-            if ((month <= end_month)&&(month >= start_month)){
-                //TODO: 
-                continue;
-            }
+    public void generate_yearly_data(int item_code){
+        for (int = 0; i < monthly_data.length; i++){
+            generate_monthly_data(i+1,item_code);
         }
     }
 
