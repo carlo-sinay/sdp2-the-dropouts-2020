@@ -19,6 +19,9 @@ public class AppGUI{
     private Gtk.ComboBox dlg_item_list_chooser;
     private Gtk.Dialog edit_record_dialog;
     private Gtk.TreePath selected_row_path;         //we keep track of IDs to edit, this is so we can write it back to the gui treestore
+    private Gtk.Window graph_win;
+    private Gtk.Grid graph_grid;
+    private Gtk.Paned graph_pane;
     private Database db;
     
     enum tree_store_fields{
@@ -47,14 +50,18 @@ public class AppGUI{
         item_list_store = bld.get_object("itemliststore") as Gtk.ListStore;
         debug_text_view = bld.get_object("debug_text_view") as Gtk.TextView;
         edit_record_dialog = bld.get_object("edit_dialog") as Gtk.Dialog;
+        graph_win = bld.get_object("graph_win") as Gtk.Window;
+        //graph_grid = bld.get_object("graph_grid") as Gtk.Grid;
+        graph_pane = bld.get_object("graph_pane") as Gtk.Paned;
         debug_text_buf = debug_text_view.get_buffer();
         debug_text_buf.get_start_iter(out debug_text_iter);
-        if(debug_text_buf == null) message("TEXT BUFFER NULL");
         message("PHP-sREPs GUI\n");
         update_item_chooser();
         display_existing_records();
         message("Done.");
         if(edit_record_dialog == null)  message("DIALOG NULL");
+        if(graph_win == null) message("Graph window null");
+        if(graph_grid == null) message("Graph grid null");
     }
 
     private void log(string msg)
@@ -157,6 +164,48 @@ public class AppGUI{
         }
     }
 
+    [CCode (instance_pos = -1)]
+    public void on_graph_close_click (Gtk.Button source) {
+        graph_grid.destroy();
+        graph_win.hide();
+    }
+    [CCode (instance_pos = -1)]
+    public void on_graph_btn_click (Gtk.Button source) {
+        log("GRAPH\n");
+        int benchNumber = 10;
+
+        Gtk.Grid graph_grid = new Gtk.Grid ();
+        graph_grid.orientation = Gtk.Orientation.VERTICAL;
+
+        double[] y = new double[benchNumber+1];
+        double[] x = new double[benchNumber+1];
+
+        y[0] = 0;
+
+        for (int i = 0; i < y.length; ++i)
+        y[i] = Random.int_range(0,100);
+
+        for (int i = 0; i < y.length; ++i)
+        x[i] = i;
+
+        //Simply set Caroline to a variable
+        var carolineWidget = new Caroline(
+        x, //dataX
+        y, //dataY
+        "smooth-line", //chart type
+        true, //yes or no for generateColors function (needed in the case of the pie chart),
+        false // yes or no for scatter plot labels
+        );
+        graph_grid.attach(carolineWidget, 0, 0, 1, 1);
+        //graph_grid = graph_pane.get_child2() as Gtk.Grid;
+        graph_pane.add2(graph_grid);
+        graph_grid.set_row_homogeneous(true);
+        graph_grid.set_column_homogeneous(true);
+
+        //graph_win.add(graph_grid);
+        graph_win.show_all();
+
+    }
 
     [CCode (instance_pos = -1)]
     public void on_add_btn_click (Gtk.Button source) {
