@@ -275,34 +275,12 @@ public class Database : GLib.Object
         var fdate_month = "";
 
         //adding prefix zero to the date of the month if required
-        if (now.get_day_of_month() < 10)
-        {
+        fdate_day = zero_padding(date_day,2);
+        fdate_day = now.get_day_of_month().to_string();
 
-
-
-          fdate_day = zero_padding(date_day,2);
-
-
-        }
-        else
-        {
-          fdate_day = now.get_day_of_month().to_string();
-
-        }
         //adding prefix zero to the month of the year if required
-        if (now.get_month() < 10)
-        {
-
-
-
-          fdate_month = zero_padding(date_month,2);
-
-        }
-        else
-        {
-          fdate_month = now.get_month().to_string();
-
-        }
+        fdate_month = zero_padding(date_month,2);
+        fdate_month = now.get_month().to_string();
 
         //variable date stores current date in formate yyyy-mm-dd
         string date = date_year + "-" + fdate_month + "-" + fdate_day;
@@ -315,28 +293,8 @@ public class Database : GLib.Object
         var final_m_last_item_id = "";
 
         // adding prefix zeros to transaction_id and item_id
-
-        if (m_last_transaction_id < 10)
-        {
-          final_m_last_transaction_id = zero_padding(m_last_transaction_id,3);
-
-        }
-        else
-        {
-          final_m_last_transaction_id = zero_padding(m_last_transaction_id,2);
-
-        }
-
-      if (m_last_item_id < 10)
-        {
-          final_m_last_item_id = zero_padding(m_last_item_id,3);
-
-        }
-        else
-        {
-          final_m_last_item_id = zero_padding(m_last_item_id,2);
-
-        }
+        final_m_last_transaction_id = zero_padding(m_last_transaction_id,3);
+        final_m_last_item_id = zero_padding(m_last_item_id,3);
 
         /* spliting the values entered by the user in terminal and adding prefix
         zeros to store data in intended format.*/
