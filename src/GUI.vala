@@ -23,6 +23,7 @@ public class AppGUI{
     private Gtk.Grid graph_grid;
     private Gtk.Paned graph_pane;
     private Database db;
+    private Caroline graph;
     
     enum tree_store_fields{
         TRANSACTION_ID,
@@ -51,7 +52,7 @@ public class AppGUI{
         debug_text_view = bld.get_object("debug_text_view") as Gtk.TextView;
         edit_record_dialog = bld.get_object("edit_dialog") as Gtk.Dialog;
         graph_win = bld.get_object("graph_win") as Gtk.Window;
-        //graph_grid = bld.get_object("graph_grid") as Gtk.Grid;
+        graph_grid = bld.get_object("graph_grid") as Gtk.Grid;
         graph_pane = bld.get_object("graph_pane") as Gtk.Paned;
         debug_text_buf = debug_text_view.get_buffer();
         debug_text_buf.get_start_iter(out debug_text_iter);
@@ -163,10 +164,37 @@ public class AppGUI{
             j = 1;
         }
     }
+    [CCode (instance_pos = -1)]
+    public void on_graph_export_click (Gtk.Button source) {
+       graph.destroy(); 
+        double[] new_y = new double[11];
+        double[] new_x = new double[11];
+
+        new_y[0] = 0;
+
+        for (int i = 0; i < new_y.length; ++i)
+        new_y[i] = Random.int_range(0,100);
+
+        for (int i = 0; i < new_y.length; ++i)
+        new_x[i] = i;
+
+        //Simply set Caroline to a variable
+        graph = new Caroline(
+        new_x, //dataX
+        new_y, //dataY
+        "bar", //chart type
+        true, //yes or no for generateColors function (needed in the case of the pie chart),
+        false // yes or no for scatter plot labels
+        );
+        graph_grid.attach(graph, 0, 0, 1, 1);
+        graph_win.show_all();
+        message("Exporting data");
+
+    }
 
     [CCode (instance_pos = -1)]
     public void on_graph_close_click (Gtk.Button source) {
-        graph_grid.destroy();
+        graph.destroy();
         graph_win.hide();
     }
     [CCode (instance_pos = -1)]
@@ -174,8 +202,8 @@ public class AppGUI{
         log("GRAPH\n");
         int benchNumber = 10;
 
-        Gtk.Grid graph_grid = new Gtk.Grid ();
-        graph_grid.orientation = Gtk.Orientation.VERTICAL;
+        //Gtk.Grid graph_grid = new Gtk.Grid ();
+        //graph_grid.orientation = Gtk.Orientation.VERTICAL;
 
         double[] y = new double[benchNumber+1];
         double[] x = new double[benchNumber+1];
@@ -189,18 +217,16 @@ public class AppGUI{
         x[i] = i;
 
         //Simply set Caroline to a variable
-        var carolineWidget = new Caroline(
+        graph = new Caroline(
         x, //dataX
         y, //dataY
-        "smooth-line", //chart type
+        "bar", //chart type
         true, //yes or no for generateColors function (needed in the case of the pie chart),
         false // yes or no for scatter plot labels
         );
-        graph_grid.attach(carolineWidget, 0, 0, 1, 1);
-        //graph_grid = graph_pane.get_child2() as Gtk.Grid;
-        graph_pane.add2(graph_grid);
-        graph_grid.set_row_homogeneous(true);
-        graph_grid.set_column_homogeneous(true);
+        graph_grid.attach(graph, 0, 0, 1, 1);
+        //graph_grid.set_row_homogeneous(true);
+        //graph_grid.set_column_homogeneous(true);
 
         //graph_win.add(graph_grid);
         graph_win.show_all();
