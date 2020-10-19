@@ -478,7 +478,7 @@ public class Database : GLib.Object
     }
 
     public void generate_yearly_data(int item_code){
-        for (int = 0; i < monthly_data.length; i++){
+        for (int i = 0; i < monthly_data.length; i++){
             generate_monthly_data(i+1,item_code);
         }
     }
