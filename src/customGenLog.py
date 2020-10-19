@@ -76,10 +76,6 @@ def main():
 		except:
 			print("Incorrect Format")
 
-	#Start and End Dates
-	start = datetime.date(2020,8,15)
-	end = datetime.date(2020,10,15)
-
 	output = "String Initialised"
 	#Add 1000 Transactions
 	usr_in = -1
