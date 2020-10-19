@@ -142,7 +142,7 @@ public class Database : GLib.Object
         expanded = line+"\n";
         return 0;
     }
-<<<<<<< HEAD
+
 
     public int check_id_in_line(ref string line)
     {
@@ -154,11 +154,10 @@ public class Database : GLib.Object
     }
 
 
-    public string zero_padding(int i, int length)
-=======
+   
 
     private string zero_padding(int i, int length)
->>>>>>> master
+
     {
         string output = "000";
 
@@ -226,14 +225,13 @@ public class Database : GLib.Object
         //Ensures price doesn't exceed 9999
         return (line.length > 4)||(line == "") ? false : true;
     }
-<<<<<<< HEAD
 
 
-    public void seek_to(int tr_id, int it_id)
-=======
+
+    
     
     private void seek_to(int tr_id, int it_id)
->>>>>>> master
+
     {
         //read line by line from beginning and check first 2 fields
         m_log_file.rewind();
@@ -584,7 +582,7 @@ public class Database : GLib.Object
         stdout.printf("Transaction Item Updated!\n");
     }
 
-<<<<<<< HEAD
+
     //TO DO: Needs to return transaction target
     public void edit_transaction(int record_id,ref string new_record)
     {
@@ -606,8 +604,7 @@ public class Database : GLib.Object
         //       Important for editing the last records of the file only
     }
 
-=======
->>>>>>> master
+
     public void delete_transaction(int t_id) {
 
         seek_to(t_id,1);
