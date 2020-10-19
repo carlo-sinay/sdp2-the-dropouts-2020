@@ -80,10 +80,13 @@ int main(string[] args) {
 
     Database.record_fields t = DATE;
     string line = myDb.get_record_info(1,1,t);
+
+    myDb.generate_yearly_data_all();
+    myDb.set_trendline(1,12);
     
     //stdout.printf("Data: %d",myDb.monthly_data[10]);
     for (int i = 0; i < myDb.monthly_data.length; i++){
-        stdout.printf("\nData: [%i,%i]",i,myDb.monthly_data[i]);
+        stdout.printf("\nData: [%i,%i], Trend: [%0.2f]",i,myDb.monthly_data[i],myDb.trendline_data[i]);
     }
 
 
