@@ -20,7 +20,9 @@ public class Database : GLib.Object
 
     private List<Item> items;
 
+    //Public Variables for temporary access
     public int[] monthly_data = new int[12];
+    public double[] trendline_data = new double[12];
 
     public enum record_fields {
         TRANSACTION_ID,             //field 0 - transaction ID
@@ -52,9 +54,15 @@ public class Database : GLib.Object
         }
         string filename3 = "../data/export/";
         file_check(ref filename3,1);             //check if export dir exists if not create it
-        
+        //Prepare Item List
         items = new List<Item>();
         make_item_list();
+
+        //Initialise public fields
+        for (int i = 0; i < 12; i++){
+            trendline_data[i] = 0;
+            monthly_data[i] = 0;
+        }
         
         m_next_report_id = 1;
     }
@@ -99,6 +107,9 @@ public class Database : GLib.Object
     }
     private void debug_msg_i(int i){
         stdout.printf("\n\033[31m Error => Got [%i] \033[0m",i);
+    }
+    private void debug_msg_f(double f){
+        stdout.printf("\n\033[31m Error => Got [%0.2f] \033[0m",f);
     }
 
 
@@ -638,6 +649,10 @@ public class Database : GLib.Object
         }
     }
 
+    /*
+    * Generates QTY of a given item and month
+    * Saves to public array for temporary access
+    */
     public int generate_monthly_data(int month, int item_code){
         int tot_qty = 0;
         string to_read = "";
@@ -661,17 +676,102 @@ public class Database : GLib.Object
         }
 
         //Update Monthly Data
+        //Save to public array
         monthly_data[month-1] = tot_qty;
 
+        //Return value
         return tot_qty;
     }
 
+    /*
+    * Generates QTY of given month
+    * Saves to public array for temporary access
+    */
+    public int generate_monthly_data_all(int month){
+        int tot_qty = 0;
+        string to_read = "";
+        //Seek to the start of the file
+        m_log_file.rewind();
+
+        //Reset monthly Data
+        monthly_data[month-1] = 0;
+
+        //Check entire database
+        while((to_read = m_log_file.read_line()) != null){
+            string[] line_info = to_read.split(",");
+            string[] date_info = line_info[5].split("-");
+            //Check Month
+            if (int.parse(date_info[1]) == month){
+                tot_qty += int.parse(line_info[3]);
+            }
+        }
+
+        //Update Monthly Data
+        //Save to public array
+        monthly_data[month-1] = tot_qty;
+
+        //Return value
+        return tot_qty;
+    }
+
+    /*
+    * Generates QTY of a given item for a year (12 months)
+    * Saves to public array for temporary access
+    */
     public void generate_yearly_data(int item_code){
         for (int i = 0; i < monthly_data.length; i++){
             generate_monthly_data(i+1,item_code);
         }
     }
 
+    /*
+    * Generates QTY of all items for a year (12 months)
+    * Saves to public array for temporary access
+    */
+    public void generate_yearly_data_all(){
+        for (int i = 0; i < monthly_data.length; i++){
+            generate_monthly_data_all(i+1);
+        }
+    }
+    
+    /*
+    * Calculates a trendline equation and plots points into a
+    * temporary array trendline_points[] for temporary access
+    *
+    * Formula => y = mx + c
+    * > m = sum(x_i - x_avg) * sum (y_i - y_avg) / (sum(x_i-x_avg))^2
+    * > c = y_avg - m*x_avg
+    */
+    public void set_trendline(int start_month, int end_month){
+        double x_avg = 0;
+        double y_avg = 0; 
+        double trend_sum_n = 0;
+        double trend_sum_d = 0;
+        //get data from monthly_data[]
+        for (int i = start_month; i <= end_month; i++){
+            //Loop for Averages
+            x_avg += (double)(i - start_month + 1);
+            y_avg += (double)monthly_data[i-1];
+        }
+        double n = end_month - start_month + 1;
+        x_avg = (double)(x_avg / n);
+        y_avg = (double)(y_avg / n);
+
+        for (int i = start_month; i <= end_month; i++){
+            //Loop for Summations
+            trend_sum_n += ((double)(i - start_month + 1) - x_avg)*((double)monthly_data[i-1] - y_avg);
+            trend_sum_d += ((double)(i - start_month + 1) - x_avg)*((double)(i - start_month + 1) - x_avg);
+        }
+        //Get the gradient
+        double m = trend_sum_n / trend_sum_d;
+        //Get y-intercept
+        double c = (double)(y_avg/(m*x_avg));
+
+        //Populate array for trendline
+        for (int i = 0; i < trendline_data.length; i++){
+            trendline_data[i] = (m*(i+1)) + c;
+        }
+    }
 
     public Item get_item(int index){
         return items.nth_data(index);
