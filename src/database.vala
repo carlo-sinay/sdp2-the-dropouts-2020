@@ -343,6 +343,7 @@ public class Database : GLib.Object
       string fdate_month = "";
 
       //adding prefix zero to the date of the month if required
+      //can be replaced with zero_padding(date_day,2)
       if (now.get_day_of_month() < 10)
       {
 
@@ -358,6 +359,7 @@ public class Database : GLib.Object
       }
 
       //adding prefix zero to the month of the year if required
+      //can be replaced with zero_padding(date_month,2)
       if (now.get_month() < 10)
       {
 
@@ -375,36 +377,17 @@ public class Database : GLib.Object
       //variable date stores current date in formate yyyy-mm-dd
       string date = date_year + "-" + fdate_month + "-" + fdate_day;
 
-      m_last_item_id++;
+      //BUG fix: didn't check the last item of the last transaction before incrementing
+      //resulted in adding 100,001 after 100,003 for example.
+      m_last_item_id = find_last_item_id(m_last_transaction_id) + 1;
+      //m_last_item_id++;
 
       var final_m_last_transaction_id = "";
       var final_m_last_item_id = "";
 
       // adding prefix zeros to transaction_id and item_id
-
-      if (m_last_transaction_id < 10)
-      {
-        final_m_last_transaction_id = zero_padding(m_last_transaction_id,3);
-
-      }
-      else
-      {
-        final_m_last_transaction_id = zero_padding(m_last_transaction_id,2);
-
-      }
-
-      if (m_last_item_id < 10)
-      {
-        final_m_last_item_id = zero_padding(m_last_item_id,3);
-
-      }
-      else
-      {
-        final_m_last_item_id = zero_padding(m_last_transaction_id,2);
-
-      }
-
-
+        //BUG fix: zero_padding was being used incorrectly, calling it with length 2 when transaction
+        //ID is 100+ resulting in it returning "000". Replaced with a call in the final data string
       /* spliting the values entered by the user in terminal and adding prefix
       zeros to store data in intended format.*/
 
@@ -417,7 +400,8 @@ public class Database : GLib.Object
       m_log_file.seek(0,FileSeek.END);
 
       //variable data stores all the information in the form of string to be saved in the log file
-      string data = final_m_last_transaction_id + "," + final_m_last_item_id + "," + type.to_string() + "," + quantity.to_string() + "," + price.to_string() + "," + date + "\n";
+      string data = zero_padding(m_last_transaction_id,3) + "," + zero_padding(m_last_item_id,3) + "," + type.to_string() + "," + quantity.to_string() + "," + price.to_string() + "," + date + "\n";
+      //string data = final_m_last_transaction_id + "," + final_m_last_item_id + "," + type.to_string() + "," + quantity.to_string() + "," + price.to_string() + "," + date + "\n";
       m_log_file.puts(data);
       seek_to(m_last_transaction_id,1);
       seek_to(m_last_item_id,1);
