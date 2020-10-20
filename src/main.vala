@@ -37,6 +37,12 @@ void test_lists(Database *db){
     stdout.printf("name: [%s]",itm.getName());
 }
 
+void test_generate_monthly_data(Database *db){
+    int month = 9;
+    int itm = 2;
+    stdout.printf("Total Qty: [%i]",db->generate_monthly_data(month, itm));
+}
+
 //Print out whole file
 void print_all(Database *db)
 {
@@ -69,8 +75,23 @@ int main(string[] args) {
     stdout.printf("Welcome to PHP-SrePS!\n");
     Database myDb = new Database();         //opened file
     //get console input for now
+
+    test_generate_monthly_data(myDb);
+
+    Database.record_fields t = DATE;
+    string line = myDb.get_record_info(1,1,t);
+
+    myDb.generate_yearly_data_all();
+    myDb.set_trendline(1,12);
+    
+    //stdout.printf("Data: %d",myDb.monthly_data[10]);
+    for (int i = 0; i < myDb.monthly_data.length; i++){
+        stdout.printf("\nData: [%i,%i], Trend: [%0.2f]",i,myDb.monthly_data[i],myDb.trendline_data[i]);
+    }
+
+
     while(true){
-        print_all(myDb);
+        //print_all(myDb);
         stdout.printf("
                         a - add record\n
                         r - read record\n
@@ -94,9 +115,59 @@ int main(string[] args) {
                 stdout.printf("Price: \n");
                 string price = stdin.read_line();
 
-                string rec = item_type+","+quantity+","+price + "\n";
-                
-                myDb.add_record(ref rec);
+
+
+                string rec = item_type+","+quantity+","+price ;
+
+                myDb.add_transaction(ref rec);
+
+                stdout.printf("Do you want to add another record?\n\n");
+                string read = stdin.read_line();
+                var i = 0;
+                if(read == "yes")
+
+                {
+                  stdout.printf("Item type: \n");
+                  string item_type2 = stdin.read_line();
+
+                  stdout.printf("Quantity: \n");
+                  string quantity2 = stdin.read_line();
+
+                  stdout.printf("Price: \n");
+                  string price2 = stdin.read_line();
+
+                  string data = item_type2+","+quantity2+","+price2 ;
+
+                  myDb.add_items(ref data);
+                  i++;
+                  while (i>0)
+                  {
+                    stdout.printf("Do you want to add another record?\n\n");
+                    string read2 = stdin.read_line();
+                    if(read2 == "yes")
+                    {
+                      stdout.printf("Item type: \n");
+                      string item_type3 = stdin.read_line();
+
+                      stdout.printf("Quantity: \n");
+                      string quantity3 = stdin.read_line();
+
+                      stdout.printf("Price: \n");
+                      string price3 = stdin.read_line();
+
+                      string data2 = item_type3+","+quantity3+","+price3 ;
+
+                      myDb.add_items(ref data2);
+                    }
+                    else
+                    {
+                      i--;
+                    }
+                  }
+                }
+
+
+
 
                 break;
             case 'r':   //read record
