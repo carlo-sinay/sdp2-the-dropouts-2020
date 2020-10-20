@@ -44,7 +44,8 @@ public class Caroline : Gtk.DrawingArea {
   private double maxPoint { get; set; }
   private double minPoint { get; set; }
 
-  private ArrayList<string> labelYList = new ArrayList<string>();
+  public ArrayList<string> labelYList = new ArrayList<string>();
+  //private ArrayList<string> labelYList = new ArrayList<string>();
 
   private double PIX { get; set; }
 
@@ -356,10 +357,10 @@ public class Caroline : Gtk.DrawingArea {
         yLabel = yLabel + gap;
 
       //Depending on double length we clean it up a bit for display if its over 8 digits
-      if (yLabel.to_string().length >= 8)
-        this.labelYList.add(yLabel.to_string().slice (0, 8));
-      else
-        this.labelYList.add(yLabel.to_string());
+//      if (yLabel.to_string().length >= 8)
+        //this.labelYList.add(yLabel.to_string().slice (0, 8));
+//      else
+        //this.labelYList.add(yLabel.to_string());
 
     }
 

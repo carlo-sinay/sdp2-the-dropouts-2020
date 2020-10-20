@@ -27,7 +27,8 @@ public class AppGUI{
     private Gtk.Paned graph_pane;
     private Database db;
     private Caroline graph;
-    
+    private double[] x_axis = new double[12];
+
     enum tree_store_fields{
         TRANSACTION_ID,
         ITEM_NAME,
@@ -70,6 +71,11 @@ public class AppGUI{
         if(change_graph_item_dlg == null)  message("GRAPH ITEM DIALOG NULL");
         if(graph_win == null) message("Graph window null");
         if(graph_grid == null) message("Graph grid null");
+
+        //init x axis data for graph
+
+        for (int i = 1; i <= x_axis.length; ++i)
+            x_axis[i-1] = i;
     }
 
     private void log(string msg)
@@ -182,31 +188,53 @@ public class AppGUI{
 
     [CCode (instance_pos = -1)]
     public void on_graph_export_click (Gtk.Button source) {
-       graph.destroy(); 
-        double[] new_y = new double[11];
-        double[] new_x = new double[11];
+        int res = change_graph_item_dlg.run();
+        log("active item: " + graph_dlg_item_chooser.get_active().to_string() + "\n");
+        graph.destroy(); 
+        db.generate_yearly_data(graph_dlg_item_chooser.get_active());
+        db.set_trendline(1,12);
+        double[] new_y = new double[12];
+        double[] new_y_trend = new double[12];
 
-        new_y[0] = 0;
 
-        for (int i = 0; i < new_y.length; ++i)
-        new_y[i] = Random.int_range(0,100);
+        for (int i = 0; i < new_y.length; ++i){
+            new_y[i] = db.monthly_data[i];
+            new_y_trend[i] = db.trendline_data[i];
 
-        for (int i = 0; i < new_y.length; ++i)
-        new_x[i] = i;
+        }
+        var graph_trend = new Caroline(
+        x_axis, //dataX
+        new_y_trend, //dataY
+        "line", //chart type
+        true, //yes or no for generateColors function (needed in the case of the pie chart),
+        true // yes or no for scatter plot labels
+        );
+ 
 
         //Simply set Caroline to a variable
         graph = new Caroline(
-        new_x, //dataX
+        x_axis, //dataX
         new_y, //dataY
         "bar", //chart type
         true, //yes or no for generateColors function (needed in the case of the pie chart),
-        false // yes or no for scatter plot labels
+        true // yes or no for scatter plot labels
         );
+        graph.spreadY = 12;
+        graph_trend.spreadY = 12;
+
+        int sp = 0;
+        for(int yl = 0; yl < 13; yl++)
+        {
+            graph.labelYList.add(sp.to_string());
+            graph_trend.labelYList.add(sp.to_string());
+            sp += 50;
+        }
+
+
         graph_grid.attach(graph, 0, 0, 1, 1);
+        graph_grid.attach(graph_trend, 0, 0, 1, 1);
         graph_win.show_all();
         message("Exporting data");
-        int res = change_graph_item_dlg.run();
-        log("response id: " + res.to_string() + "\n");
         change_graph_item_dlg.hide();
 
     }
@@ -219,35 +247,50 @@ public class AppGUI{
     [CCode (instance_pos = -1)]
     public void on_graph_btn_click (Gtk.Button source) {
         log("GRAPH\n");
-        int benchNumber = 10;
+         db.generate_yearly_data(2);
+        db.set_trendline(1,12);
+        double[] new_y = new double[12];
+        double[] new_y_trend = new double[12];
 
-        //Gtk.Grid graph_grid = new Gtk.Grid ();
-        //graph_grid.orientation = Gtk.Orientation.VERTICAL;
 
-        double[] y = new double[benchNumber+1];
-        double[] x = new double[benchNumber+1];
+        for (int i = 0; i < new_y.length; ++i){
+            new_y[i] = db.monthly_data[i];
+            new_y_trend[i] = db.trendline_data[i];
 
-        y[0] = 0;
-
-        for (int i = 0; i < y.length; ++i)
-        y[i] = Random.int_range(0,100);
-
-        for (int i = 0; i < y.length; ++i)
-        x[i] = i;
+        }
+        var graph_trend = new Caroline(
+        x_axis, //dataX
+        new_y_trend, //dataY
+        "line", //chart type
+        true, //yes or no for generateColors function (needed in the case of the pie chart),
+        true // yes or no for scatter plot labels
+        );
+ 
 
         //Simply set Caroline to a variable
         graph = new Caroline(
-        x, //dataX
-        y, //dataY
+        x_axis, //dataX
+        new_y, //dataY
         "bar", //chart type
         true, //yes or no for generateColors function (needed in the case of the pie chart),
-        false // yes or no for scatter plot labels
+        true // yes or no for scatter plot labels
         );
-        graph_grid.attach(graph, 0, 0, 1, 1);
-        //graph_grid.set_row_homogeneous(true);
-        //graph_grid.set_column_homogeneous(true);
+        graph.spreadY = 12;
+        graph_trend.spreadY = 12;
 
-        //graph_win.add(graph_grid);
+        int sp = 0;
+        for(int yl = 0; yl < 13; yl++)
+        {
+            graph.labelYList.add(sp.to_string());
+            graph_trend.labelYList.add(sp.to_string());
+            sp += 50;
+        }
+
+
+        graph_grid.attach(graph, 0, 0, 1, 1);
+        graph_grid.attach(graph_trend, 0, 0, 1, 1);
+ 
+ 
         graph_win.show_all();
 
     }
@@ -256,12 +299,34 @@ public class AppGUI{
     public void on_add_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();
         string qty = qty_entry.get_text();
+        int price = int.parse(qty) * db.get_item(item_id).getPrice();
         //TODO: add item to actual database and get its transaction and item IDs
         string temp = "";
-        add_to_item_list(0, item_id,ref qty,ref temp,ref temp);
+        string rec = item_id.to_string() + "," + qty + "," + price.to_string();
+        db.add_items(ref rec);
+        string new_db_tr_id = db.last_transaction_id.to_string();
+        string new_db_it_id = db.find_last_item_id(int.parse(new_db_tr_id)).to_string();
+        //add_to_item_list(0, item_id,ref qty,ref temp,ref temp);
+        add_to_item_list(0, item_id,ref qty,ref new_db_tr_id,ref new_db_it_id);
         log("Adding " + qty + " of " + db.get_item(item_id).getName() + "\n");
     }
 
+    [CCode (instance_pos = -1)]
+    public void on_new_btn_click (Gtk.Button source) {
+        int item_id = item_list_chooser.get_active();
+        string qty = qty_entry.get_text();
+        int price = int.parse(qty) * db.get_item(item_id).getPrice();
+        //TODO: add item to actual database and get its transaction and item IDs
+        string temp = "";
+        string rec = item_id.to_string() + "," + qty + "," + price.to_string();
+        db.add_transaction(ref rec);
+        string new_db_tr_id = db.last_transaction_id.to_string();
+        string new_db_it_id = db.find_last_item_id(int.parse(new_db_tr_id)).to_string();
+        add_to_item_list(1, item_id,ref qty,ref temp,ref temp);
+        add_to_item_list(0, item_id,ref qty,ref new_db_tr_id,ref new_db_it_id);
+        log("New transaction\n");
+    }
+ 
     [CCode (instance_pos = -1)]
     public void on_edit_btn_click (Gtk.Button source) {
 
@@ -305,25 +370,8 @@ public class AppGUI{
         edit_record_dialog.hide();
     }
 
-        
-    /*
-    [CCode (instance_pos = -1)]
-    public void diag_resp(Gtk.Dialog source)
-    {
-        message("Dialog response handler!");
-    }
-    */
-    [CCode (instance_pos = -1)]
-    public void on_new_btn_click (Gtk.Button source) {
-        int item_id = item_list_chooser.get_active();
-        string qty = qty_entry.get_text();
-        //TODO: add item to actual database and get its transaction and item IDs
-        string temp = "";
-        add_to_item_list(1, item_id,ref qty,ref temp,ref temp);
-        add_to_item_list(0, item_id,ref qty,ref temp,ref temp);
-        log("New transaction\n");
-    }
-    [CCode (instance_pos = -1)]
+
+   [CCode (instance_pos = -1)]
     public void on_tv_row_active(Gtk.TreeView source, Gtk.TreePath path, Gtk.TreeViewColumn column) {
         string? item_name = null;
         string? db_tr_id = null;
