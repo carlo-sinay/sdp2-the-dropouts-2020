@@ -6,6 +6,7 @@ public class AppGUI{
     public Gtk.Label test_label;
     private Gtk.Entry qty_entry;
     private Gtk.Entry dlg_qty_entry;
+    private Gtk.Entry graph_dlg_data_range;
     private Gtk.Builder m_bldr;
     private Gtk.ListStore item_list_store;
     private Gtk.TreeStore ls;
@@ -17,7 +18,9 @@ public class AppGUI{
     private Gtk.TextIter debug_text_iter;
     private Gtk.ComboBox item_list_chooser;
     private Gtk.ComboBox dlg_item_list_chooser;
+    private Gtk.ComboBox graph_dlg_item_chooser;
     private Gtk.Dialog edit_record_dialog;
+    private Gtk.Dialog change_graph_item_dlg;
     private Gtk.TreePath selected_row_path;         //we keep track of IDs to edit, this is so we can write it back to the gui treestore
     private Gtk.Window graph_win;
     private Gtk.Grid graph_grid;
@@ -46,11 +49,14 @@ public class AppGUI{
         ls = bld.get_object("mytreestore") as Gtk.TreeStore;
         qty_entry = bld.get_object("qty_entry") as Gtk.Entry;
         dlg_qty_entry = bld.get_object("dlg_qty_entry") as Gtk.Entry;
+        graph_dlg_data_range = bld.get_object("graph_dlg_data_range") as Gtk.Entry;
         item_list_chooser = bld.get_object("itemlistchooser") as Gtk.ComboBox;
         dlg_item_list_chooser = bld.get_object("dlg_itemlistchooser") as Gtk.ComboBox;
+        graph_dlg_item_chooser = bld.get_object("graph_dlg_item_chooser") as Gtk.ComboBox;
         item_list_store = bld.get_object("itemliststore") as Gtk.ListStore;
         debug_text_view = bld.get_object("debug_text_view") as Gtk.TextView;
         edit_record_dialog = bld.get_object("edit_dialog") as Gtk.Dialog;
+        change_graph_item_dlg = bld.get_object("change_graph_item_dlg") as Gtk.Dialog;
         graph_win = bld.get_object("graph_win") as Gtk.Window;
         graph_grid = bld.get_object("graph_grid") as Gtk.Grid;
         graph_pane = bld.get_object("graph_pane") as Gtk.Paned;
@@ -61,6 +67,7 @@ public class AppGUI{
         display_existing_records();
         message("Done.");
         if(edit_record_dialog == null)  message("DIALOG NULL");
+        if(change_graph_item_dlg == null)  message("GRAPH ITEM DIALOG NULL");
         if(graph_win == null) message("Graph window null");
         if(graph_grid == null) message("Graph grid null");
     }
@@ -165,6 +172,15 @@ public class AppGUI{
         }
     }
     [CCode (instance_pos = -1)]
+    public void on_graph_item_done_click(Gtk.Button source) {
+    }
+
+    [CCode (instance_pos = -1)]
+    public void on_graph_item_back_click(Gtk.Button source) {
+        change_graph_item_dlg.hide();
+    }
+
+    [CCode (instance_pos = -1)]
     public void on_graph_export_click (Gtk.Button source) {
        graph.destroy(); 
         double[] new_y = new double[11];
@@ -189,6 +205,9 @@ public class AppGUI{
         graph_grid.attach(graph, 0, 0, 1, 1);
         graph_win.show_all();
         message("Exporting data");
+        int res = change_graph_item_dlg.run();
+        log("response id: " + res.to_string() + "\n");
+        change_graph_item_dlg.hide();
 
     }
 

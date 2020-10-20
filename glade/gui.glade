@@ -1,10 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.22.2 -->
 <!--*- mode: xml -*-->
 <interface>
   <requires lib="gtk+" version="3.12"/>
+  <object class="GtkDialog" id="change_graph_item_dlg">
+    <property name="width_request">350</property>
+    <property name="height_request">200</property>
+    <property name="can_focus">False</property>
+    <property name="type_hint">dialog</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">center</property>
+            <child>
+              <object class="GtkButton" id="graph_dlg_back">
+                <property name="label" translatable="yes">Back</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="app_gui_on_graph_item_done_click" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="graph_dlg_done">
+                <property name="label" translatable="yes">Done</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="app_gui_on_graph_item_done_click" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLayout">
+            <property name="height_request">185</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkComboBox" id="graph_dlg_item_chooser">
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="model">itemliststore</property>
+                <child>
+                  <object class="GtkCellRendererText" id="cbrenderer2"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+              <packing>
+                <property name="x">135</property>
+                <property name="y">30</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="width_request">100</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Which item</property>
+              </object>
+              <packing>
+                <property name="y">35</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="graph_dlg_data_range">
+                <property name="width_request">120</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+              </object>
+              <packing>
+                <property name="x">135</property>
+                <property name="y">100</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="width_request">100</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Data range (months)</property>
+              </object>
+              <packing>
+                <property name="y">105</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="1">graph_dlg_back</action-widget>
+      <action-widget response="0">graph_dlg_done</action-widget>
+    </action-widgets>
+  </object>
   <object class="GtkWindow" id="graph_win">
     <property name="can_focus">False</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkPaned" id="graph_pane">
         <property name="visible">True</property>
@@ -57,13 +182,12 @@
         </child>
         <child>
           <object class="GtkBox">
-            <property name="height_request">40</property>
+            <property name="height_request">60</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
               <object class="GtkButton" id="graph_export_btn">
-                <property name="label" translatable="yes">Export</property>
-                <property name="height_request">20</property>
+                <property name="label" translatable="yes">Change item</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -78,7 +202,6 @@
             <child>
               <object class="GtkButton" id="graph_close_btn">
                 <property name="label" translatable="yes">Close</property>
-                <property name="height_request">20</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -98,9 +221,6 @@
         </child>
       </object>
     </child>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkListStore" id="itemliststore">
     <columns>
@@ -113,6 +233,9 @@
     <property name="height_request">200</property>
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can_focus">False</property>
@@ -226,9 +349,6 @@
       <action-widget response="1">dlg_cancel</action-widget>
       <action-widget response="0">dlg_done</action-widget>
     </action-widgets>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkTreeStore" id="mytreestore">
     <columns>
@@ -251,6 +371,9 @@
     <property name="height_request">750</property>
     <property name="can_focus">False</property>
     <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkPaned">
         <property name="visible">True</property>
@@ -528,98 +651,6 @@
           </packing>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-  </object>
-  <object class="GtkWindow" id="new_graph_window">
-    <property name="width_request">500</property>
-    <property name="height_request">500</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkPaned">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkGrid">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="resize">False</property>
-            <property name="shrink">True</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButtonBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">center</property>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Change item</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="resize">True</property>
-            <property name="shrink">True</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
     </child>
   </object>
 </interface>
