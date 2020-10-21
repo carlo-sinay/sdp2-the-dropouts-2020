@@ -130,11 +130,25 @@ public class Database : GLib.Object
         //add column titles
         m_report.puts(column_titles);
 
+        string item_name;
+        string qty;
+        string price;
         for(int i = 1; i <= m_last_transaction_id; i++)
         {
-            expand_values_in_record(i,ref line_to_expand);
-            stdout.printf("expanded line: %s\n",line_to_expand);
-            m_report.puts(line_to_expand);
+            for(int j = 1; j < find_last_item_id(i); j++){
+                int item_code = int.parse(get_record_info(i,j,record_fields.ITEM_CODE));
+                if(item_code != -1){
+                item_name = get_item(item_code).getName();
+                qty = get_record_info(i,j, record_fields.QUANTITY);
+                price = get_record_info(i,j, record_fields.PRICE); 
+                } else {
+                    item_name = "---";
+                    qty = "---";
+                    price = "---";
+                }
+                line_to_expand = item_name + "," + qty + "," + price + "\n"; 
+                m_report.puts(line_to_expand);
+            }
         }
         m_report.flush();
             return 0;
@@ -426,7 +440,14 @@ public class Database : GLib.Object
     {
         string info = read_record(tr_id,item_id);
         string[] info_vals = info.split(",");
-        return info_vals[which];
+        //always return the IDs, unless record is valid in which case return relevant data
+        if(which <= record_fields.ITEM_ID || info_vals.length > 3)
+        {
+            return info_vals[which];
+        } else {                        //asking for anything other than IDs in deleted record, return -1
+            return "-1";
+            
+        }
     }
 
 
@@ -753,7 +774,7 @@ public class Database : GLib.Object
 
         //Populate array for trendline
         for (int i = 0; i < trendline_data.length; i++){
-            trendline_data[i] = (m*(i+1)) + c;
+            trendline_data[i] = ((m*(i+1)) + c )* -1;
         }
     }
 
