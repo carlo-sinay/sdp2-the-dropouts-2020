@@ -375,6 +375,7 @@ public class AppGUI{
     public void on_add_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();
         string qty = qty_entry.get_text();
+        if(int.parse(qty) > 0){
         int price = int.parse(qty) * db.get_item(item_id).getPrice();
         //TODO: add item to actual database and get its transaction and item IDs
         string temp = "";
@@ -385,6 +386,7 @@ public class AppGUI{
         //add_to_item_list(0, item_id,ref qty,ref temp,ref temp);
         add_to_item_list(0, item_id,ref qty,ref new_db_tr_id,ref new_db_it_id);
         log("Adding " + qty + " of " + db.get_item(item_id).getName() + "\n");
+        }
     }
 
     [CCode (instance_pos = -1)]
@@ -403,6 +405,7 @@ public class AppGUI{
     public void on_new_btn_click (Gtk.Button source) {
         int item_id = item_list_chooser.get_active();
         string qty = qty_entry.get_text();
+        if(int.parse(qty) > 0){
         int price = int.parse(qty) * db.get_item(item_id).getPrice();
         //TODO: add item to actual database and get its transaction and item IDs
         string temp = "-1";
@@ -413,6 +416,7 @@ public class AppGUI{
         add_to_item_list(1, item_id,ref qty,ref new_db_tr_id,ref temp);
         add_to_item_list(0, item_id,ref qty,ref new_db_tr_id,ref new_db_it_id);
         log("New transaction\n");
+        }
     }
  
     [CCode (instance_pos = -1)]
