@@ -9,7 +9,7 @@ public class Database : GLib.Object
     //Variables
     private FileStream m_log_file;
     private FileStream m_report;
-    private string column_titles = "Item,Quantity,Price\n";
+    private string column_titles = "TransactionID,Item,Quantity,Price,Date\n";
     private File m_dir_checker;
     private int m_log_file_tid_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line. */
     private int m_log_file_iid_pos;              /* Keep track of what record ID the file pointer is at. It will be at the beginning of that line. */
@@ -133,20 +133,25 @@ public class Database : GLib.Object
         string item_name;
         string qty;
         string price;
+        string transaction_id;
+        string date;
         for(int i = 1; i <= m_last_transaction_id; i++)
         {
             for(int j = 1; j < find_last_item_id(i); j++){
                 int item_code = int.parse(get_record_info(i,j,record_fields.ITEM_CODE));
+                transaction_id = get_record_info(i,j,record_fields.TRANSACTION_ID);
                 if(item_code != -1){
                 item_name = get_item(item_code).getName();
                 qty = get_record_info(i,j, record_fields.QUANTITY);
                 price = get_record_info(i,j, record_fields.PRICE); 
+                date = get_record_info(i,j, record_fields.DATE); 
                 } else {
                     item_name = "---";
                     qty = "---";
                     price = "---";
+                    date = "---";
                 }
-                line_to_expand = item_name + "," + qty + "," + price + "\n"; 
+                line_to_expand = transaction_id + "," + item_name + "," + qty + "," + price + "," + date + "\n"; 
                 m_report.puts(line_to_expand);
             }
         }
