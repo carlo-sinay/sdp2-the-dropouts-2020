@@ -508,12 +508,12 @@ public class AppGUI{
         //update the treestore from the db.
 
         message("Dialog done!");
-        edit_record_dialog.hide();
+        //edit_record_dialog.hide();
     }
  
     public void dlg_cancel_click (Gtk.Button source) {
         message("Dialog cancel!");
-        edit_record_dialog.hide();
+        //edit_record_dialog.hide();
     }
 
 
